@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cling-core-2.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/fourthline/cling/cling-core/2.0-SNAPSHOT/cling-core-2.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
