@@ -9,7 +9,7 @@ import org.fourthline.cling.model.types.UDAServiceType;
 /**
  * Created by wonyoungjang on 13. 10. 15..
  */
-public class BrowserRendererUpnpService extends AndroidUpnpServiceImpl {
+public class RendererUpnpService extends AndroidUpnpServiceImpl {
 
     @Override
     protected UpnpServiceConfiguration createConfiguration() {
@@ -22,7 +22,7 @@ public class BrowserRendererUpnpService extends AndroidUpnpServiceImpl {
             @Override
             public ServiceType[] getExclusiveServiceTypes() {
                 return new ServiceType[] {
-                  new UDAServiceType("RenderingControl"),
+                  new UDAServiceType("ContentDirectory"),
                   new UDAServiceType("AVTransport")
                 };
             }
