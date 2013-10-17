@@ -1,11 +1,13 @@
 package com.wonyoung.remoteupnp;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,9 @@ import java.util.ArrayList;
  */
 public class DeviceSelectFragment extends Fragment {
 
+    private ArrayList<Device> rendererList;
+    private ArrayList<Device> mediaServiceList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_device_select, container, false);
@@ -36,17 +41,28 @@ public class DeviceSelectFragment extends Fragment {
             args = getArguments();
         }
 
-        ArrayList<Device> rendererList = (ArrayList<Device>) args.getSerializable(MainActivity.ARG_RENDER_LIST);
-        ArrayList<Device> mediaServiceList = (ArrayList<Device>) args.getSerializable(MainActivity.ARG_MEDIA_SERVER_LIST);
+        restoreDeviceListFromBundle(args);
 
-        DeviceAdapter rendererListAdapter = new DeviceAdapter(rendererList);
-        ListView rendererListView = (ListView) rootView.findViewById(R.id.renderer_list);
-        rendererListView.setAdapter(rendererListAdapter);
-        final Context context = inflater.getContext();
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        final Activity activity = getActivity();
+
+        if (savedInstanceState != null) {
+            restoreDeviceListFromBundle(savedInstanceState);
+        }
+
+        ListView rendererListView = (ListView) activity.findViewById(R.id.renderer_list);
+        rendererListView.setAdapter(new DeviceAdapter(rendererList));
+
         rendererListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog dialog = new AlertDialog.Builder(context).create();
+                AlertDialog dialog = new AlertDialog.Builder(activity).create();
                 Device device = (Device) parent.getItemAtPosition(position);
                 dialog.setTitle(device.toString());
 
@@ -98,10 +114,21 @@ public class DeviceSelectFragment extends Fragment {
 
 
         DeviceAdapter mediaServerListAdapter = new DeviceAdapter(mediaServiceList);
-        ListView mediaServerListView = (ListView) rootView.findViewById(R.id.media_server_list);
+        ListView mediaServerListView = (ListView) activity.findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerListAdapter);
 
-        return rootView;
+    }
+
+    private void restoreDeviceListFromBundle(Bundle args) {
+        rendererList = (ArrayList<Device>) args.getSerializable(MainActivity.ARG_RENDER_LIST);
+        mediaServiceList = (ArrayList<Device>) args.getSerializable(MainActivity.ARG_MEDIA_SERVER_LIST);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(MainActivity.ARG_RENDER_LIST, rendererList);
+        outState.putSerializable(MainActivity.ARG_MEDIA_SERVER_LIST, mediaServiceList);
     }
 
     private class DeviceAdapter extends BaseAdapter {
