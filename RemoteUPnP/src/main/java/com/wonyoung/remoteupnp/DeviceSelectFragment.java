@@ -27,10 +27,12 @@ import java.util.ArrayList;
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
-public class DeviceSelectFragment extends Fragment {
+public class DeviceSelectFragment extends Fragment implements RegistryUI {
 
     private ArrayList<Device> rendererList;
     private ArrayList<Device> mediaServiceList;
+    private DeviceAdapter rendererListAdapter;
+    private DeviceAdapter mediaServerListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +59,8 @@ public class DeviceSelectFragment extends Fragment {
         }
 
         ListView rendererListView = (ListView) activity.findViewById(R.id.renderer_list);
-        rendererListView.setAdapter(new DeviceAdapter(rendererList));
+        rendererListAdapter = new DeviceAdapter(rendererList);
+        rendererListView.setAdapter(rendererListAdapter);
 
         rendererListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -113,7 +116,7 @@ public class DeviceSelectFragment extends Fragment {
         });
 
 
-        DeviceAdapter mediaServerListAdapter = new DeviceAdapter(mediaServiceList);
+        mediaServerListAdapter = new DeviceAdapter(mediaServiceList);
         ListView mediaServerListView = (ListView) activity.findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerListAdapter);
 
@@ -129,6 +132,12 @@ public class DeviceSelectFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putSerializable(MainActivity.ARG_RENDER_LIST, rendererList);
         outState.putSerializable(MainActivity.ARG_MEDIA_SERVER_LIST, mediaServiceList);
+    }
+
+    @Override
+    public void update() {
+        rendererListAdapter.notifyDataSetChanged();
+        mediaServerListAdapter.notifyDataSetChanged();
     }
 
     private class DeviceAdapter extends BaseAdapter {

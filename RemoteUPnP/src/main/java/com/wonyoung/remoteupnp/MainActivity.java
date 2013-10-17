@@ -208,11 +208,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 case 1:
                     return new PlayerFragment();
                 case 2:
-                    Fragment deviceSelectFragment = new DeviceSelectFragment();
+                    DeviceSelectFragment deviceSelectFragment = new DeviceSelectFragment();
                     Bundle args = new Bundle();
                     args.putSerializable(ARG_RENDER_LIST, rendererList);
                     args.putSerializable(ARG_MEDIA_SERVER_LIST, mediaServerList);
                     deviceSelectFragment.setArguments(args);
+                    registryListener.setUIUpdater(deviceSelectFragment);
                     return deviceSelectFragment;
             }
             return null;
@@ -244,6 +245,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         private final ServiceType SERVICE_TYPE_MEDIA_SERVER = new UDAServiceType("ContentDirectory");
         private ArrayList<Device> rendererList;
         private ArrayList<Device> mediaServerList;
+        private RegistryUI ui = new RegistryUI() {
+            @Override
+            public void update() {
+            }
+        };
 
         public BrowseRegistryListener(ArrayList<Device> rendererList,
                                       ArrayList<Device> mediaServerList) {
@@ -315,6 +321,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     } else {
                         list.add(device);
                     }
+                    ui.update();
                 }
             });
         }
@@ -324,8 +331,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 public void run() {
                     mediaServerList.remove(device);
                     rendererList.remove(device);
+                    ui.update();
                 }
             });
+        }
+
+        public void setUIUpdater(RegistryUI ui) {
+            this.ui = ui;
         }
     }
 }
