@@ -4,6 +4,8 @@
       <root url="jar://$MAVEN_REPOSITORY$/org/fourthline/cling/cling-core/2.0-SNAPSHOT/cling-core-2.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/fourthline/cling/cling-core/2.0-SNAPSHOT/cling-core-2.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

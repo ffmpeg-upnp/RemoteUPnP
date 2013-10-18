@@ -22,6 +22,7 @@ public class RendererUpnpService extends AndroidUpnpServiceImpl {
             @Override
             public ServiceType[] getExclusiveServiceTypes() {
                 return new ServiceType[] {
+                  new UDAServiceType("ConnectionManager"),
                   new UDAServiceType("ContentDirectory"),
                   new UDAServiceType("AVTransport")
                 };
