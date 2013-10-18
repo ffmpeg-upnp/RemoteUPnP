@@ -1,6 +1,5 @@
 package com.wonyoung.remoteupnp.test;
 
-import com.wonyoung.remoteupnp.Renderer;
 import com.wonyoung.remoteupnp.folder.UPnPFolder;
 
 import org.fourthline.cling.model.Namespace;
@@ -23,14 +22,14 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-
 /**
- * Created by wonyoungjang on 13. 10. 16..
+ * Created by wonyoungjang on 13. 10. 19..
  */
-public class FakeRenderer extends Device implements Renderer {
-    public FakeRenderer() throws ValidationException {
+public class FakeMediaServer extends Device {
+    public static final String ROOT_FOLDER_NAME = "0";
+    public static final UPnPFolder SUB_FOLDER = new UPnPFolder();
+
+    public FakeMediaServer() throws ValidationException {
         super(new DeviceIdentity(new UDN("")));
     }
 
@@ -84,7 +83,13 @@ public class FakeRenderer extends Device implements Renderer {
         return new Resource[0];
     }
 
-    public void isPlaying(UPnPFolder.File file) {
+    public void hasReceivedRequestFolder(String folder) {
 
     }
+
+    public void sendFolders(UPnPFolder folder) {
+
+    }
+
+
 }
