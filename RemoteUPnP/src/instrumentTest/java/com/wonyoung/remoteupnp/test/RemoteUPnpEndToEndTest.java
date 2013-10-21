@@ -19,13 +19,24 @@ public class RemoteUPnpEndToEndTest extends ActivityInstrumentationTestCase2<Mai
 
     public void setUp() throws Exception {
         super.setUp();
-        mediaServer = new FakeMediaServer();
-        renderer = new FakeRenderer();
+        mediaServer = FakeMediaServer.createDevice();
+        renderer = FakeRenderer.createDevice();
+    }
+
+    public void testSetRendererAndMediaServer() {
+        application.startWith(upnpService);
+        upnpService.hasReceivedDeviceListRequest();
+
+        upnpService.sendDeviceList(renderer, mediaServer);
+        application.showsDevices(renderer, mediaServer);
+
+        application.readyWith(renderer, mediaServer);
     }
 
     public void testAddFirstFileToPlayListAndPlay() {
         application.startWith(upnpService);
         upnpService.hasReceivedDeviceListRequest();
+
         upnpService.sendDeviceList(renderer, mediaServer);
         application.showsDevices(renderer, mediaServer);
 

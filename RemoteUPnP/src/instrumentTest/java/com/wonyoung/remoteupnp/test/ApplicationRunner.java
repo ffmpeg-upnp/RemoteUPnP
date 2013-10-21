@@ -22,21 +22,26 @@ public class ApplicationRunner {
     }
 
     public void startWith(UPnPService upnpService) {
-        driver = new RemoteUPnpDriver(new Solo(inst.getInstrumentation(),
-                inst.getActivity()));
         MainActivity activity = inst.getActivity();
-        activity.setUPnPService(upnpService);
+        driver = new RemoteUPnpDriver(new Solo(inst.getInstrumentation(),
+                activity), activity);
+
+        driver.setUPnPService(upnpService);
     }
 
     public void showsDevices(Device... devices) {
+        for (Device device : devices) {
+            driver.showsDevice(device.getDisplayString());
+        }
     }
 
     public void readyWith(Device renderer, Device mediaServer) {
-
+        driver.setRenderer(renderer);
+        driver.setMediaServer(mediaServer);
     }
 
     public void requestFolders(Device mediaServer, String folder) {
-
+        driver.browse(mediaServer, folder);
     }
 
     public void showsFolders(UPnPFolder folder) {
