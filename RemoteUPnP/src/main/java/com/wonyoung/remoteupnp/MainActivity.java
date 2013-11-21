@@ -20,7 +20,6 @@ import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.types.ServiceId;
 import org.fourthline.cling.model.types.ServiceType;
 import org.fourthline.cling.model.types.UDAServiceType;
 import org.fourthline.cling.registry.DefaultRegistryListener;
@@ -35,10 +34,10 @@ public class MainActivity extends FragmentActivity
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
 
-    private ArrayList<Device> rendererList = new ArrayList<Device>();
-    private ArrayList<Device> mediaServerList = new ArrayList<Device>();
-    private DeviceAdapter rendererListAdapter = new DeviceAdapter(rendererList);
-    private DeviceAdapter mediaServerListAdapter = new DeviceAdapter(mediaServerList);
+    private ArrayList<Device> searchedRenderers = new ArrayList<Device>();
+    private ArrayList<Device> searchedMediaServers = new ArrayList<Device>();
+    private DeviceAdapter rendererAdapter = new DeviceAdapter(searchedRenderers);
+    private DeviceAdapter mediaServerAdapter = new DeviceAdapter(searchedMediaServers);
 
     private BrowseRegistryListener registryListener;
 
@@ -47,32 +46,6 @@ public class MainActivity extends FragmentActivity
     private Device mediaServer;
 
 
-    //    private ServiceConnection serviceConnection = new ServiceConnection() {
-//    private AndroidUpnpService upnpService;
-//
-//        public void onServiceConnected(ComponentName className, IBinder service) {
-//            upnpService = (AndroidUpnpService) service;
-//
-//            // Clear the list
-//            rendererList.clear();
-//            mediaServerList.clear();
-//
-//            // Get ready for future device advertisements
-//            upnpService.getRegistry().addListener(registryListener);
-//
-//            // Now add all devices to the list we already know about
-//            for (Device device : upnpService.getRegistry().getDevices()) {
-//                registryListener.deviceAdded(device);
-//            }
-//
-//            // Search asynchronously for all devices, they will respond soon
-//            upnpService.getControlPoint().search();
-//        }
-//
-//        public void onServiceDisconnected(ComponentName className) {
-//            upnpService = null;
-//        }
-//    };
 //    private Device mediaServer;
 //    private List<Item> fileList;
 //    private List<Container> folderList;
@@ -197,11 +170,7 @@ public class MainActivity extends FragmentActivity
 
         registryListener = new BrowseRegistryListener();
 
-//        getApplicationContext().bindService(
-//                new Intent(this, RendererUpnpService.class),
-//                serviceConnection,
-//                Context.BIND_AUTO_CREATE
-//        );
+        service = new MyUPnPService(this);
     }
 
     private void setUpActionBarAndViewPager() {
@@ -239,10 +208,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onDestroy() {
-//        if (upnpService != null) {
-//            upnpService.getRegistry().removeListener(registryListener);
-//        }
-//        getApplicationContext().unbindService(serviceConnection);
+        service.destroy();
 
         super.onDestroy();
     }
@@ -405,8 +371,8 @@ public class MainActivity extends FragmentActivity
             switch (position) {
                 case 0:
                     deviceSelectFragment = new DeviceSelectFragment();
-                    deviceSelectFragment.setRendererAdapter(rendererListAdapter, null);
-                    deviceSelectFragment.setMediaServerAdapter(mediaServerListAdapter, null);
+                    deviceSelectFragment.setRendererAdapter(rendererAdapter, null);
+                    deviceSelectFragment.setMediaServerAdapter(mediaServerAdapter, null);
                     return deviceSelectFragment;
                 case 1:
                     librarySelectFragment = new LibrarySelectFragment();
@@ -491,9 +457,9 @@ public class MainActivity extends FragmentActivity
             for (Service service : device.getServices()) {
                 ServiceType serviceType = service.getServiceType();
                 if (SERVICE_TYPE_RENDERER.equals(serviceType)) {
-                    addDeviceTo(rendererListAdapter, device);
+                    addDeviceTo(rendererAdapter, device);
                 } else if (SERVICE_TYPE_MEDIA_SERVER.equals(serviceType)) {
-                    addDeviceTo(mediaServerListAdapter, device);
+                    addDeviceTo(mediaServerAdapter, device);
                 }
             }
         }
@@ -514,10 +480,10 @@ public class MainActivity extends FragmentActivity
         public void deviceRemoved(final Device device) {
             runOnUiThread(new Runnable() {
                 public void run() {
-                    mediaServerList.remove(device);
-                    rendererList.remove(device);
-                    mediaServerListAdapter.notifyDataSetChanged();
-                    rendererListAdapter.notifyDataSetChanged();
+                    searchedMediaServers.remove(device);
+                    searchedRenderers.remove(device);
+                    mediaServerAdapter.notifyDataSetChanged();
+                    rendererAdapter.notifyDataSetChanged();
                 }
             });
         }

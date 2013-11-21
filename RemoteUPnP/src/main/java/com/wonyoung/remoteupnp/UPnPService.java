@@ -8,4 +8,6 @@ import org.fourthline.cling.registry.RegistryListener;
 public interface UPnPService {
     void addListener(RegistryListener registryListener);
     void updateDeviceList();
+
+    void destroy();
 }
