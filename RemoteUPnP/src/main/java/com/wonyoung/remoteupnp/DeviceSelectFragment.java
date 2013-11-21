@@ -1,24 +1,148 @@
 package com.wonyoung.remoteupnp;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import org.fourthline.cling.model.meta.Action;
+import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.DeviceDetails;
+import org.fourthline.cling.model.meta.ModelDetails;
+import org.fourthline.cling.model.meta.Service;
+
+import static com.wonyoung.remoteupnp.MainActivity.*;
 
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
 public class DeviceSelectFragment extends Fragment {
+    private final DeviceAdapter rendererAdapter;
+    private final DeviceAdapter mediaServerAdapter;
+    private UPnPService service;
 
-    private ListAdapter rendererAdapter;
-    private AdapterView.OnItemClickListener rendererOnItemClick;
-    private ListAdapter mediaServerAdapter;
-    private AdapterView.OnItemClickListener mediaServerOnItemClick;
+    private AdapterView.OnItemClickListener mediaServerOnItemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AlertDialog dialog = new AlertDialog.Builder(view.getContext()).create();
+            final Device device = (Device) parent.getItemAtPosition(position);
+            dialog.setTitle(device.toString());
+
+            dialog.setMessage(getDetailsMessage(device));
+            dialog.setButton(
+                    "Close",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+//                            onMediaServerSelected(device);
+                        }
+                    }
+            );
+            dialog.show();
+            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+            textView.setTextSize(12);
+        }
+
+        private String getDetailsMessage(Device device) {
+            StringBuilder sb = new StringBuilder();
+            DeviceDetails detail = device.getDetails();
+            sb.append("BaseURL : " + detail.getBaseURL() + "\n");
+            sb.append("FriendlyName : " + detail.getFriendlyName() + "\n");
+            sb.append("SerialNumber : " + detail.getSerialNumber() + "\n");
+            sb.append("Upc : " + detail.getUpc() + "\n");
+            sb.append("PresentationURI : " + detail.getPresentationURI() + "\n");
+
+            ModelDetails modelDetails = detail.getModelDetails();
+            sb.append("\n");
+            sb.append("ModelDescription : " + modelDetails.getModelDescription() + "\n");
+            sb.append("ModelName : " + modelDetails.getModelName() + "\n");
+            sb.append("ModelNumber : " + modelDetails.getModelNumber() + "\n");
+            sb.append("ModelURI : " + modelDetails.getModelURI() + "\n");
+
+            sb.append("\n\n");
+            if (device.isFullyHydrated()) {
+                for (Service service : device.getServices()) {
+                    sb.append(service.getServiceType()).append("\n");
+                    for (Action action : service.getActions()) {
+                        sb.append("(" + action.getName() + ")\n");
+                    }
+                    sb.append("\n");
+                }
+            } else {
+                sb.append("Device Details not yet Available");
+            }
+
+            return sb.toString();
+        }
+    };
+    private AdapterView.OnItemClickListener rendererOnItemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AlertDialog dialog = new AlertDialog.Builder(view.getContext()).create();
+            final Device device = (Device) parent.getItemAtPosition(position);
+            dialog.setTitle(device.toString());
+
+            dialog.setMessage(getDetailsMessage(device));
+            dialog.setButton(
+                    "Close",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+//                            onRendererSelected(device);
+                        }
+                    }
+            );
+            dialog.show();
+            TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+            textView.setTextSize(12);
+        }
+
+        private String getDetailsMessage(Device device) {
+            StringBuilder sb = new StringBuilder();
+            DeviceDetails detail = device.getDetails();
+            sb.append("BaseURL : " + detail.getBaseURL() + "\n");
+            sb.append("FriendlyName : " + detail.getFriendlyName() + "\n");
+            sb.append("SerialNumber : " + detail.getSerialNumber() + "\n");
+            sb.append("Upc : " + detail.getUpc() + "\n");
+            sb.append("PresentationURI : " + detail.getPresentationURI() + "\n");
+
+            ModelDetails modelDetails = detail.getModelDetails();
+            sb.append("\n");
+            sb.append("ModelDescription : " + modelDetails.getModelDescription() + "\n");
+            sb.append("ModelName : " + modelDetails.getModelName() + "\n");
+            sb.append("ModelNumber : " + modelDetails.getModelNumber() + "\n");
+            sb.append("ModelURI : " + modelDetails.getModelURI() + "\n");
+
+            sb.append("\n\n");
+            if (device.isFullyHydrated()) {
+                for (Service service : device.getServices()) {
+                    sb.append(service.getServiceType()).append("\n");
+                    for (Action action : service.getActions()) {
+                        sb.append("(" + action.getName() + ")\n");
+                    }
+                    sb.append("\n");
+                }
+            } else {
+                sb.append("Device Details not yet Available");
+            }
+
+            return sb.toString();
+        }
+    };
+
+    public DeviceSelectFragment(UPnPService service) {
+        this.service = service;
+        rendererAdapter = new DeviceAdapter(service.getRenderers());
+        mediaServerAdapter = new DeviceAdapter(service.getMediaServers());
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,13 +164,49 @@ public class DeviceSelectFragment extends Fragment {
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
     }
 
-    public void setRendererAdapter(ListAdapter rendererAdapter, AdapterView.OnItemClickListener rendererOnItemClick) {
-        this.rendererAdapter = rendererAdapter;
-        this.rendererOnItemClick = rendererOnItemClick;
-    }
+    public class DeviceAdapter extends BaseAdapter {
 
-    public void setMediaServerAdapter(ListAdapter mediaServerAdapter, AdapterView.OnItemClickListener mediaServerOnItemClick) {
-        this.mediaServerAdapter = mediaServerAdapter;
-        this.mediaServerOnItemClick = mediaServerOnItemClick;
+        private UPnPService.DeviceList deviceList;
+
+        public DeviceAdapter(UPnPService.DeviceList deviceList) {
+            this.deviceList = deviceList;
+            deviceList.addListener(this);
+        }
+
+        @Override
+        public int getCount() {
+            return deviceList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return deviceList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            TextView view = (TextView) convertView;
+            if (view == null) {
+                view = new TextView(parent.getContext());
+            }
+
+            Device device = deviceList.get(position);
+            view.setText(device.getDisplayString());
+            return view;
+        }
+
+        public void update() {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        }
     }
 }
