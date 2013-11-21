@@ -1,15 +1,40 @@
 package com.wonyoung.remoteupnp;
 
+import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import org.fourthline.cling.controlpoint.ActionCallback;
+import org.fourthline.cling.model.action.ActionInvocation;
+import org.fourthline.cling.model.message.UpnpResponse;
+import org.fourthline.cling.model.meta.Service;
+import org.fourthline.cling.support.contentdirectory.callback.Browse;
+import org.fourthline.cling.support.model.BrowseFlag;
+import org.fourthline.cling.support.model.DIDLContent;
+import org.fourthline.cling.support.model.container.Container;
+import org.fourthline.cling.support.model.item.Item;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends ListFragment {
-//    private List<Item> fileList;
-//    private List<Container> folderList;
+public class LibrarySelectFragment extends Fragment {
+    private final UPnPService uPnPService;
+    private List<Item> fileList;
+    private List<Container> folderList;
 
 
 //    private void onRendererSelected(Device device) {
@@ -46,90 +71,96 @@ public class LibrarySelectFragment extends ListFragment {
 //        browse(mediaServer.findService(new UDAServiceId("ContentDirectory")));
 //    }
 
-//    private void browse(Service service) {
-//
-//        ActionCallback rootBrowseAction = new Browse(service, "0", BrowseFlag.DIRECT_CHILDREN) {
-//
-//            @Override
-//            public void received(ActionInvocation actionInvocation, DIDLContent didlContent) {
-//                fileList = didlContent.getItems();
-//                folderList = didlContent.getContainers();
-//
-//                Log.e("wonyoung", "folder count : " + folderList.size());
-//                for (Container folder : folderList) {
-//                    Log.e("wonyoung", folder.getTitle() + " id-" + folder.getId());
-//                }
-//
-//                Log.e("wonyoung", "files count : " + fileList.size());
-//                for (Item item : fileList) {
-//                    if (item != null) {
-//                        Log.e("wonyoung", String.format("[%s]",item.getTitle()));
-//                        if (item.getFirstResource() != null)
-//                            Log.e("wonyoung", String.format("      :[%s] ",item.getFirstResource().getValue()));
-//
-//                    }
-//                }
-//
-//
-//                ArrayAdapter<Item> itemAdapter = new ArrayAdapter<Item>(MainActivity.this, android.R.layout.simple_list_item_activated_1,
-//                        fileList);
-//                ArrayAdapter<Container> folderAdapter = new ArrayAdapter<Container>(MainActivity.this, android.R.layout.simple_list_item_activated_1,
-//                        folderList);
-//
-//                mSectionsPagerAdapter.librarySelectFragment.setListAdapter(itemAdapter);
-//            }
-//
-//            @Override
-//            public void updateStatus(Status status) {
-//
-//            }
-//
-//            @Override
-//            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-//
-//            }
-//        };
-//        upnpService.getControlPoint().execute(rootBrowseAction);
-//
-//        ActionCallback browseAction = new Browse(service, "0$1$2$1", BrowseFlag.DIRECT_CHILDREN) {
-//
-//            @Override
-//            public void received(ActionInvocation actionInvocation, DIDLContent didlContent) {
-//                fileList = didlContent.getItems();
-//                folderList = didlContent.getContainers();
-//
-//                Log.e("wonyoung", "folder count : " + folderList.size());
-//                for (Container folder : folderList) {
-//                    Log.e("wonyoung", folder.getTitle() + " id-" + folder.getId());
-//                }
-//
-//                Log.e("wonyoung", "files count : " + fileList.size());
-//                for (Item item : fileList) {
-//                    Log.e("wonyoung", item.getTitle() + " : " + item.getFirstResource().getValue());
-//                }
-//
-//
-//                ArrayAdapter<Item> itemAdapter = new ArrayAdapter<Item>(MainActivity.this, android.R.layout.simple_list_item_activated_1,
-//                        fileList);
-//                ArrayAdapter<Container> folderAdapter = new ArrayAdapter<Container>(MainActivity.this, android.R.layout.simple_list_item_activated_1,
-//                        folderList);
-//
-//                mSectionsPagerAdapter.librarySelectFragment.setListAdapter(itemAdapter);
-//            }
-//
-//            @Override
-//            public void updateStatus(Status status) {
-//
-//            }
-//
-//            @Override
-//            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-//
-//            }
-//        };
-//
-//        upnpService.getControlPoint().execute(browseAction);
-//
-//    }
+    public void browse(Service service) {
 
+        ActionCallback rootBrowseAction = new Browse(service, "0", BrowseFlag.DIRECT_CHILDREN) {
+
+            @Override
+            public void received(ActionInvocation actionInvocation, DIDLContent didlContent) {
+                fileList = didlContent.getItems();
+                folderList = didlContent.getContainers();
+
+                final ArrayList<String> list = new ArrayList<String>();
+
+                Log.e("wonyoung", "folder count : " + folderList.size());
+                for (Container folder : folderList) {
+                    list.add(folder.getTitle());
+                    Log.e("wonyoung", folder.getTitle() + " id-" + folder.getId());
+                }
+
+                Log.e("wonyoung", "files count : " + fileList.size());
+                for (Item item : fileList) {
+                    if (item != null) {
+                        list.add(item.getTitle());
+                        Log.e("wonyoung", String.format("[%s]", item.getTitle()));
+                        if (item.getFirstResource() != null)
+                            Log.e("wonyoung", String.format("      :[%s] ", item.getFirstResource().getValue()));
+
+                    }
+                }
+
+                final Context context = getActivity();
+
+                ListView listView = (ListView) getActivity().findViewById(R.id.listView);
+
+                ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_activated_1,
+                        list);
+                ArrayAdapter<Container> folderAdapter = new ArrayAdapter<Container>(context, android.R.layout.simple_list_item_activated_1,
+                        folderList);
+
+                BaseAdapter adapter = new BaseAdapter() {
+                    @Override
+                    public int getCount() {
+                        return list.size();
+                    }
+
+                    @Override
+                    public Object getItem(int position) {
+                        return list.get(position);
+                    }
+
+                    @Override
+                    public long getItemId(int position) {
+                        return 0;
+                    }
+
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        TextView textView = (TextView) convertView;
+                        if (textView == null) {
+                            textView = new TextView(parent.getContext());
+                        }
+                        textView.setText(list.get(position));
+                        return textView;
+                    }
+                };
+
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void updateStatus(Status status) {
+
+            }
+
+            @Override
+            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+
+            }
+        };
+
+        uPnPService.execute(rootBrowseAction);
+    }
+
+    public LibrarySelectFragment(UPnPService service) {
+        this.uPnPService = service;
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_library_select, container, false);
+
+        return rootView;
+    }
 }

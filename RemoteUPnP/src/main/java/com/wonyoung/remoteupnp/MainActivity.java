@@ -112,7 +112,7 @@ public class MainActivity extends FragmentActivity
                     deviceSelectFragment = new DeviceSelectFragment(service);
                     return deviceSelectFragment;
                 case 1:
-                    librarySelectFragment = new LibrarySelectFragment();
+                    librarySelectFragment = new LibrarySelectFragment(service);
                     return librarySelectFragment;
                 case 2:
                     playerFragment = new PlayerFragment();

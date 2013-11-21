@@ -8,11 +8,13 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.fourthline.cling.android.AndroidUpnpService;
+import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.ServiceType;
+import org.fourthline.cling.model.types.UDAServiceId;
 import org.fourthline.cling.model.types.UDAServiceType;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
@@ -23,12 +25,16 @@ import java.util.ArrayList;
  * Created by wonyoungjang on 2013. 11. 18..
  */
 public class MyUPnPService implements UPnPService {
+    private final MainActivity activity;
     private Context context;
     private AndroidUpnpService upnpService;
 
     private BrowseRegistryListener registryListener;
     private DeviceList mediaServers = new MyDeviceList();
     private DeviceList renderers = new MyDeviceList();
+
+    private Device mediaServer;
+    private Device renderer;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -57,6 +63,7 @@ public class MyUPnPService implements UPnPService {
     };
 
     public MyUPnPService(Context context) {
+        this.activity = (MainActivity) context; // temp. code for browse
         this.context = context.getApplicationContext();
 
         registryListener = new BrowseRegistryListener();
@@ -66,6 +73,22 @@ public class MyUPnPService implements UPnPService {
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
+    }
+
+    @Override
+    public void setMediaServer(int position) {
+        mediaServer = mediaServers.get(position);
+        activity.mSectionsPagerAdapter.librarySelectFragment.browse(mediaServer.findService(new UDAServiceId("ContentDirectory")));
+    }
+
+    @Override
+    public void setRenderer(int position) {
+        renderer = renderers.get(position);
+    }
+
+    @Override
+    public void execute(ActionCallback action) {
+        upnpService.getControlPoint().execute(action);
     }
 
     @Override
