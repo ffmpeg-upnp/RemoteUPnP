@@ -21,4 +21,6 @@ public interface UPnPService {
     Device getMediaDevice();
 
     Device getRendererDevice();
+
+    void setOnMediaServerChangeListener(OnMediaServerChangeListener listener);
 }

@@ -31,6 +31,7 @@ public class MyUPnPService implements UPnPService {
     private Device mediaServerDevice;
     private Device renderer;
 
+    private boolean bounded = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -49,13 +50,16 @@ public class MyUPnPService implements UPnPService {
 
             // Search asynchronously for all devices, they will respond soon
             upnpService.getControlPoint().search();
+            bounded = true;
         }
 
         public void onServiceDisconnected(ComponentName className) {
             upnpService = null;
+            bounded = false;
         }
     };
     private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
+    private OnMediaServerChangeListener mediaServerChangeListener;
 
     public MyUPnPService(Context context) {
         this.activity = (MainActivity) context; // temp. code for browse
@@ -81,9 +85,17 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
+    public void setOnMediaServerChangeListener(OnMediaServerChangeListener listener) {
+        mediaServerChangeListener = listener;
+        listener.OnMediaServerChanged(mediaServerDevice);
+    }
+
+    @Override
     public void setMediaServer(Device device) {
         mediaServerDevice = device;
-        activity.mSectionsPagerAdapter.librarySelectFragment.mediaServer.browse("0");
+        if (mediaServerChangeListener != null) {
+            mediaServerChangeListener.OnMediaServerChanged(device);
+        }
     }
 
     @Override
@@ -109,7 +121,10 @@ public class MyUPnPService implements UPnPService {
         if (upnpService != null) {
             upnpService.getRegistry().removeListener(registryListener);
         }
-        context.unbindService(serviceConnection);
+        if (bounded) {
+            context.unbindService(serviceConnection);
+            bounded = false;
+        }
     }
 
     private class BrowseRegistryListener extends DefaultRegistryListener {

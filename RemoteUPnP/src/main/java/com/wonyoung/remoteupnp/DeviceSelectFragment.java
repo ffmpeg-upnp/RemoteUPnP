@@ -100,10 +100,6 @@ public class DeviceSelectFragment extends Fragment {
         return sb.toString();
     }
 
-    public DeviceSelectFragment(UPnPService service) {
-        this.service = service;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_device_select, container, false);
@@ -115,7 +111,8 @@ public class DeviceSelectFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Activity activity = getActivity();
+        MainActivity activity = (MainActivity) getActivity();
+        this.service = activity.getUPnPService();
 
         rendererAdapter = new DeviceAdapter(activity, DeviceAdapter.SERVICE_TYPE_RENDERER);
         ListView rendererListView = (ListView) getActivity().findViewById(R.id.renderer_list);

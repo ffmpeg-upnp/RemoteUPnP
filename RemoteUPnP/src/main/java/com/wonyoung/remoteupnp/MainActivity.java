@@ -95,6 +95,10 @@ public class MainActivity extends FragmentActivity
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    public UPnPService getUPnPService() {
+        return service;
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public PlayerFragment playerFragment;
@@ -109,10 +113,10 @@ public class MainActivity extends FragmentActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    deviceSelectFragment = new DeviceSelectFragment(service);
+                    deviceSelectFragment = new DeviceSelectFragment();
                     return deviceSelectFragment;
                 case 1:
-                    librarySelectFragment = new LibrarySelectFragment(service);
+                    librarySelectFragment = new LibrarySelectFragment();
                     return librarySelectFragment;
                 case 2:
                     playerFragment = new PlayerFragment();

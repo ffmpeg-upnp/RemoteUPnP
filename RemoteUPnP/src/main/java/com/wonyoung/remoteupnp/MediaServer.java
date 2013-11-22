@@ -38,6 +38,8 @@ public class MediaServer {
 
     public void browse(String folder) {
         this.device = uPnPService.getMediaDevice();
+        if (device == null) return;
+
         service = device.findService(new UDAServiceId("ContentDirectory"));
         ActionCallback browseAction = new Browse(service, folder, BrowseFlag.DIRECT_CHILDREN) {
 
@@ -48,23 +50,15 @@ public class MediaServer {
 
                 final ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
 
-                Log.e("wonyoung", "folder count : " + folderList.size());
                 for (Container folder : folderList) {
                     list.add(folder);
-                    Log.e("wonyoung", "title : " + folder.getTitle());
-                    Log.e("wonyoung", "id : " + folder.getId());
-                    Log.e("wonyoung", "parentId : " + folder.getParentID());
                 }
 
-                Log.e("wonyoung", "files count : " + fileList.size());
                 for (Item item : fileList) {
-                    if (item != null) {
-                        list.add(item);
-                        Log.e("wonyoung", String.format("[%s]", item.getTitle()));
-                        if (item.getFirstResource() != null)
-                            Log.e("wonyoung", String.format("      :[%s] ", item.getFirstResource().getValue()));
+                    list.add(item);
+                    if (item.getFirstResource() != null)
+                        Log.e("remoteUpnp", String.format("url : [%s] ", item.getFirstResource().getValue()));
 
-                    }
                 }
                 subscriber.updatedFolderList(list);
             }

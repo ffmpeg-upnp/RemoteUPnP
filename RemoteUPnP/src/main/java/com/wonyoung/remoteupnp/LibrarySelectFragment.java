@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.fourthline.cling.Main;
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -39,8 +41,8 @@ import java.util.List;
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends Fragment {
-    private final UPnPService uPnPService;
+public class LibrarySelectFragment extends Fragment implements OnMediaServerChangeListener {
+    private UPnPService uPnPService;
     public MediaServer mediaServer;
     private FolderViewAdapter adapter;
 
@@ -70,10 +72,6 @@ public class LibrarySelectFragment extends Fragment {
         }
     }
 
-    public LibrarySelectFragment(UPnPService service) {
-        this.uPnPService = service;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_library_select, container, false);
@@ -85,8 +83,11 @@ public class LibrarySelectFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        adapter = new FolderViewAdapter(getActivity());
-        ListView listView = (ListView) getActivity().findViewById(R.id.listView);
+        final MainActivity activity = (MainActivity) getActivity();
+        this.uPnPService = activity.getUPnPService();
+
+        adapter = new FolderViewAdapter(activity);
+        ListView listView = (ListView) activity.findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,8 +101,17 @@ public class LibrarySelectFragment extends Fragment {
                 }
             }
         });
-
         mediaServer = new MediaServer(uPnPService, adapter);
 
+        uPnPService.setOnMediaServerChangeListener(this);
+    }
+
+    private void browseRoot() {
+        mediaServer.browse("0");
+    }
+
+    @Override
+    public void OnMediaServerChanged(Device device) {
+        browseRoot();
     }
 }
