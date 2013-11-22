@@ -68,7 +68,7 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onDestroy() {
-        service.destroy();
+//        service.destroy();
 
         super.onDestroy();
     }

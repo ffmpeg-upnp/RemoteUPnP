@@ -12,10 +12,6 @@ import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.types.ServiceType;
-import org.fourthline.cling.model.types.UDAServiceId;
-import org.fourthline.cling.model.types.UDAServiceType;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 
@@ -30,10 +26,9 @@ public class MyUPnPService implements UPnPService {
     private AndroidUpnpService upnpService;
 
     private BrowseRegistryListener registryListener;
-    private ArrayList<Device> mediaServers = new ArrayList<Device>();
-    private ArrayList<Device> renderers = new ArrayList<Device>();
+    private ArrayList<Device> devices = new ArrayList<Device>();
 
-    private Device mediaServer;
+    private Device mediaServerDevice;
     private Device renderer;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -42,8 +37,7 @@ public class MyUPnPService implements UPnPService {
             upnpService = (AndroidUpnpService) service;
 
             // Clear the list
-            renderers.clear();
-            mediaServers.clear();
+            devices.clear();
 
             // Get ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
@@ -61,7 +55,7 @@ public class MyUPnPService implements UPnPService {
             upnpService = null;
         }
     };
-    private Callback listener;
+    private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
 
     public MyUPnPService(Context context) {
         this.activity = (MainActivity) context; // temp. code for browse
@@ -77,14 +71,24 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
-    public void setMediaServer(int position) {
-        mediaServer = mediaServers.get(position);
-        activity.mSectionsPagerAdapter.librarySelectFragment.browse(mediaServer.findService(new UDAServiceId("ContentDirectory")));
+    public Device getMediaDevice() {
+        return mediaServerDevice;
     }
 
     @Override
-    public void setRenderer(int position) {
-        renderer = renderers.get(position);
+    public Device getRendererDevice() {
+        return renderer;
+    }
+
+    @Override
+    public void setMediaServer(Device device) {
+        mediaServerDevice = device;
+        activity.mSectionsPagerAdapter.librarySelectFragment.mediaServer.browse("0");
+    }
+
+    @Override
+    public void setRenderer(Device device) {
+        renderer = device;
     }
 
     @Override
@@ -93,8 +97,11 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
-    public void addListener(Callback listener) {
-        this.listener = listener;
+    public void addListener(DeviceSubscriber listener) {
+        listeners.add(listener);
+        for (Device device : devices) {
+            listener.add(device);
+        }
     }
 
     @Override
@@ -105,21 +112,7 @@ public class MyUPnPService implements UPnPService {
         context.unbindService(serviceConnection);
     }
 
-    @Override
-    public ArrayList<Device> getMediaServers() {
-        return mediaServers;
-    }
-
-    @Override
-    public ArrayList<Device> getRenderers() {
-        return renderers;
-    }
-
-
     private class BrowseRegistryListener extends DefaultRegistryListener {
-
-        private final UDAServiceType SERVICE_TYPE_RENDERER = new UDAServiceType("AVTransport");
-        private final ServiceType SERVICE_TYPE_MEDIA_SERVER = new UDAServiceType("ContentDirectory");
 
         /* Discovery performance optimization for very slow Android devices! */
         @Override
@@ -155,35 +148,16 @@ public class MyUPnPService implements UPnPService {
 
         public void deviceAdded(final Device device) {
             Log.e("remoteUPNP", "device added - " + device.getDisplayString());
-            for (Service service : device.getServices()) {
-                ServiceType serviceType = service.getServiceType();
-                if (SERVICE_TYPE_RENDERER.equals(serviceType)) {
-                    add(renderers, device);
-                } else if (SERVICE_TYPE_MEDIA_SERVER.equals(serviceType)) {
-                    add(mediaServers, device);
-                }
-                listener.update();
-            }
-        }
-
-        private void add(ArrayList<Device> devices, Device device) {
-            int position = devices.indexOf(device);
-            if (position >= 0) {
-                devices.set(position, device);
-            } else {
-                devices.add(device);
+            devices.add(device);
+            for (DeviceSubscriber listener : listeners) {
+                listener.add(device);
             }
         }
 
         public void deviceRemoved(final Device device) {
-            for (Service service : device.getServices()) {
-                ServiceType serviceType = service.getServiceType();
-                if (SERVICE_TYPE_RENDERER.equals(serviceType)) {
-                    renderers.remove(device);
-                } else if (SERVICE_TYPE_MEDIA_SERVER.equals(serviceType)) {
-                    mediaServers.remove(device);
-                }
-                listener.update();
+            devices.remove(device);
+            for (DeviceSubscriber listener : listeners) {
+                listener.remove(device);
             }
         }
     }

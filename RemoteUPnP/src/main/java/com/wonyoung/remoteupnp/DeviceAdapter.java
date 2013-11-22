@@ -7,24 +7,26 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.Service;
+import org.fourthline.cling.model.types.ServiceType;
+import org.fourthline.cling.model.types.UDAServiceType;
 
 import java.util.ArrayList;
 
 /**
-* Created by wonyoung.jang on 13. 11. 22.
-*/
-public class DeviceAdapter extends BaseAdapter {
+ * Created by wonyoung.jang on 13. 11. 22.
+ */
+public class DeviceAdapter extends BaseAdapter implements DeviceSubscriber {
+    public final static ServiceType SERVICE_TYPE_RENDERER = new UDAServiceType("AVTransport");
+    public final static ServiceType SERVICE_TYPE_MEDIA_SERVER = new UDAServiceType("ContentDirectory");
 
     private Activity activity;
-    private ArrayList<Device> devices;
+    private ServiceType serviceTypeFilter;
+    protected ArrayList<Device> devices = new ArrayList<Device>();
 
-    public DeviceAdapter(Activity activity, ArrayList<Device> deviceList) {
+    public DeviceAdapter(Activity activity, ServiceType serviceTypeFilter) {
         this.activity = activity;
-        this.devices = deviceList;
-    }
-
-    public DeviceAdapter(Activity activity) {
-        this.activity = activity;
+        this.serviceTypeFilter = serviceTypeFilter;
     }
 
     @Override
@@ -63,19 +65,24 @@ public class DeviceAdapter extends BaseAdapter {
         });
     }
 
-    public void clear() {
-        devices.clear();
+    public void add(Device item) {
+        for (Service service : item.getServices()) {
+            ServiceType serviceType = service.getServiceType();
+            if (serviceTypeFilter.equals(serviceType)) {
+                int position = devices.indexOf(item);
+                if (position >= 0) {
+                    devices.set(position, item);
+                } else {
+                    devices.add(item);
+                }
+                update();
+                break;
+            }
+        }
     }
 
-    public Device get(int position) {
-        return devices.get(position);
-    }
-
-    public void add(Device device) {
-        devices.add(device);
-    }
-
-    public void remove(Device device) {
-        devices.remove(device);
+    public void remove(Device item) {
+        devices.remove(item);
+        update();
     }
 }

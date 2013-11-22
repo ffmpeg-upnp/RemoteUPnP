@@ -1,6 +1,7 @@
 package com.wonyoung.remoteupnp;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,9 +24,9 @@ import org.fourthline.cling.model.meta.Service;
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
-public class DeviceSelectFragment extends Fragment implements UPnPService.Callback {
-    private final DeviceAdapter rendererAdapter;
-    private final DeviceAdapter mediaServerAdapter;
+public class DeviceSelectFragment extends Fragment {
+    private DeviceAdapter rendererAdapter;
+    private DeviceAdapter mediaServerAdapter;
     private UPnPService service;
 
     private AdapterView.OnItemClickListener mediaServerOnItemClick = new AdapterView.OnItemClickListener() {
@@ -34,7 +35,7 @@ public class DeviceSelectFragment extends Fragment implements UPnPService.Callba
             final Device device = (Device) parent.getItemAtPosition(position);
             final Context context = view.getContext();
             openDeviceDetailDialog(context, device);
-            service.setMediaServer(position);
+            service.setMediaServer(device);
         }
     };
 
@@ -44,7 +45,7 @@ public class DeviceSelectFragment extends Fragment implements UPnPService.Callba
             final Device device = (Device) parent.getItemAtPosition(position);
             final Context context = view.getContext();
             openDeviceDetailDialog(context, device);
-            service.setRenderer(position);
+            service.setRenderer(device);
         }
     };
 
@@ -57,6 +58,7 @@ public class DeviceSelectFragment extends Fragment implements UPnPService.Callba
                 "Close",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        MainActivity activity = (MainActivity) getActivity();
 //                            onMediaServerSelected(device);
                     }
                 }
@@ -100,11 +102,6 @@ public class DeviceSelectFragment extends Fragment implements UPnPService.Callba
 
     public DeviceSelectFragment(UPnPService service) {
         this.service = service;
-        FragmentActivity activity = getActivity();
-        rendererAdapter = new DeviceAdapter(activity, service.getRenderers());
-        mediaServerAdapter = new DeviceAdapter(activity, service.getMediaServers());
-        service.addListener(this);
-
     }
 
     @Override
@@ -118,18 +115,18 @@ public class DeviceSelectFragment extends Fragment implements UPnPService.Callba
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Activity activity = getActivity();
+
+        rendererAdapter = new DeviceAdapter(activity, DeviceAdapter.SERVICE_TYPE_RENDERER);
         ListView rendererListView = (ListView) getActivity().findViewById(R.id.renderer_list);
         rendererListView.setAdapter(rendererAdapter);
         rendererListView.setOnItemClickListener(rendererOnItemClick);
+        service.addListener(rendererAdapter);
 
+        mediaServerAdapter = new DeviceAdapter(activity, DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
         ListView mediaServerListView = (ListView) getActivity().findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerAdapter);
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
-    }
-
-    @Override
-    public void update() {
-        mediaServerAdapter.notifyDataSetChanged();
-        rendererAdapter.notifyDataSetChanged();
+        service.addListener(mediaServerAdapter);
     }
 }
