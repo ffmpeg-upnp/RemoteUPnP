@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RemoteUPnP/RemoteUPnP.iml" filepath="$PROJECT_DIR$/RemoteUPnP/RemoteUPnP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RemoteUPnP/RemoteUPnP-RemoteUPnP.iml" filepath="$PROJECT_DIR$/RemoteUPnP/RemoteUPnP-RemoteUPnP.iml" />
       <module fileurl="file://$PROJECT_DIR$/RemoteUPnPProject.iml" filepath="$PROJECT_DIR$/RemoteUPnPProject.iml" />
     </modules>
   </component>
