@@ -30,8 +30,8 @@ public class MyUPnPService implements UPnPService {
     private AndroidUpnpService upnpService;
 
     private BrowseRegistryListener registryListener;
-    private DeviceList mediaServers = new MyDeviceList();
-    private DeviceList renderers = new MyDeviceList();
+    private ArrayList<Device> mediaServers = new ArrayList<Device>();
+    private ArrayList<Device> renderers = new ArrayList<Device>();
 
     private Device mediaServer;
     private Device renderer;
@@ -61,6 +61,7 @@ public class MyUPnPService implements UPnPService {
             upnpService = null;
         }
     };
+    private Callback listener;
 
     public MyUPnPService(Context context) {
         this.activity = (MainActivity) context; // temp. code for browse
@@ -92,6 +93,11 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
+    public void addListener(Callback listener) {
+        this.listener = listener;
+    }
+
+    @Override
     public void destroy() {
         if (upnpService != null) {
             upnpService.getRegistry().removeListener(registryListener);
@@ -100,55 +106,13 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
-    public DeviceList getMediaServers() {
+    public ArrayList<Device> getMediaServers() {
         return mediaServers;
     }
 
     @Override
-    public DeviceList getRenderers() {
+    public ArrayList<Device> getRenderers() {
         return renderers;
-    }
-
-    private static class MyDeviceList implements DeviceList {
-        private ArrayList<Device> devices = new ArrayList<Device>();
-        private DeviceSelectFragment.DeviceAdapter listener;
-
-        @Override
-        public void addListener(DeviceSelectFragment.DeviceAdapter listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public Device get(int position) {
-            return devices.get(position);
-        }
-
-        @Override
-        public int size() {
-            return devices.size();
-        }
-
-        @Override
-        public void clear() {
-            devices.clear();
-        }
-
-        @Override
-        public void add(Device device) {
-            int position = devices.indexOf(device);
-            if (position >= 0) {
-                devices.set(position, device);
-            } else {
-                devices.add(device);
-            }
-            listener.update();
-        }
-
-        @Override
-        public void remove(Device device) {
-            devices.remove(device);
-            listener.update();
-        }
     }
 
 
@@ -194,10 +158,20 @@ public class MyUPnPService implements UPnPService {
             for (Service service : device.getServices()) {
                 ServiceType serviceType = service.getServiceType();
                 if (SERVICE_TYPE_RENDERER.equals(serviceType)) {
-                    renderers.add(device);
+                    add(renderers, device);
                 } else if (SERVICE_TYPE_MEDIA_SERVER.equals(serviceType)) {
-                    mediaServers.add(device);
+                    add(mediaServers, device);
                 }
+                listener.update();
+            }
+        }
+
+        private void add(ArrayList<Device> devices, Device device) {
+            int position = devices.indexOf(device);
+            if (position >= 0) {
+                devices.set(position, device);
+            } else {
+                devices.add(device);
             }
         }
 
@@ -209,6 +183,7 @@ public class MyUPnPService implements UPnPService {
                 } else if (SERVICE_TYPE_MEDIA_SERVER.equals(serviceType)) {
                     mediaServers.remove(device);
                 }
+                listener.update();
             }
         }
     }

@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends Fragment {
+public class LibrarySelectFragment extends Fragment implements UPnPService.Callback {
     private final UPnPService uPnPService;
     private List<Item> fileList;
     private List<Container> folderList;
@@ -154,7 +154,7 @@ public class LibrarySelectFragment extends Fragment {
 
     public LibrarySelectFragment(UPnPService service) {
         this.uPnPService = service;
-
+        service.addListener(this);
     }
 
     @Override
@@ -162,5 +162,10 @@ public class LibrarySelectFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_library_select, container, false);
 
         return rootView;
+    }
+
+    @Override
+    public void update() {
+
     }
 }

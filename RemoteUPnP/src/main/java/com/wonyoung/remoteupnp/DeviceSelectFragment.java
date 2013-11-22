@@ -6,12 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,12 +20,10 @@ import org.fourthline.cling.model.meta.DeviceDetails;
 import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.meta.Service;
 
-import static com.wonyoung.remoteupnp.MainActivity.*;
-
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
-public class DeviceSelectFragment extends Fragment {
+public class DeviceSelectFragment extends Fragment implements UPnPService.Callback {
     private final DeviceAdapter rendererAdapter;
     private final DeviceAdapter mediaServerAdapter;
     private UPnPService service;
@@ -103,8 +100,10 @@ public class DeviceSelectFragment extends Fragment {
 
     public DeviceSelectFragment(UPnPService service) {
         this.service = service;
-        rendererAdapter = new DeviceAdapter(service.getRenderers());
-        mediaServerAdapter = new DeviceAdapter(service.getMediaServers());
+        FragmentActivity activity = getActivity();
+        rendererAdapter = new DeviceAdapter(activity, service.getRenderers());
+        mediaServerAdapter = new DeviceAdapter(activity, service.getMediaServers());
+        service.addListener(this);
 
     }
 
@@ -128,49 +127,9 @@ public class DeviceSelectFragment extends Fragment {
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
     }
 
-    public class DeviceAdapter extends BaseAdapter {
-
-        private UPnPService.DeviceList deviceList;
-
-        public DeviceAdapter(UPnPService.DeviceList deviceList) {
-            this.deviceList = deviceList;
-            deviceList.addListener(this);
-        }
-
-        @Override
-        public int getCount() {
-            return deviceList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return deviceList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView view = (TextView) convertView;
-            if (view == null) {
-                view = new TextView(parent.getContext());
-            }
-
-            Device device = deviceList.get(position);
-            view.setText(device.getDisplayString());
-            return view;
-        }
-
-        public void update() {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    notifyDataSetChanged();
-                }
-            });
-        }
+    @Override
+    public void update() {
+        mediaServerAdapter.notifyDataSetChanged();
+        rendererAdapter.notifyDataSetChanged();
     }
 }

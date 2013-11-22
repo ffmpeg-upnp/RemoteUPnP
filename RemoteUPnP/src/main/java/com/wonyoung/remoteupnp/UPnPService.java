@@ -2,7 +2,6 @@ package com.wonyoung.remoteupnp;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.meta.Device;
-import org.fourthline.cling.registry.RegistryListener;
 
 import java.util.ArrayList;
 
@@ -15,23 +14,14 @@ public interface UPnPService {
 
     void execute(ActionCallback action);
 
-    public interface DeviceList {
+    void addListener(Callback listener);
 
-        void addListener(DeviceSelectFragment.DeviceAdapter deviceAdapter);
-
-        Device get(int position);
-
-        int size();
-
-        void clear();
-
-        void add(Device device);
-
-        void remove(Device device);
+    public interface Callback {
+        void update();
     }
 
     void destroy();
 
-    DeviceList getMediaServers();
-    DeviceList getRenderers();
+    ArrayList<Device> getMediaServers();
+    ArrayList<Device> getRenderers();
 }
