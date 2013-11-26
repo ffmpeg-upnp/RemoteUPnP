@@ -30,11 +30,25 @@ public class MediaServer {
     private List<Item> fileList;
     private List<Container> folderList;
 
-
-    public MediaServer(UPnPService uPnPService, FolderSubscriber subscriber) {
+	private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
+	
+    public MediaServer(UPnPService uPnPService) {
         this.uPnPService = uPnPService;
-        this.subscriber = subscriber;
     }
+
+	public void addAll()
+	{
+		PlaylistAdapter listAdapter = uPnPService.getPlaylistAdapter();
+		for (Item item : fileList) {
+			listAdapter.add(item);
+		}
+	}
+
+	public void setListener(FolderSubscriber subscriber)
+	{
+		this.subscriber = subscriber;
+		subscriber.updatedFolderList(list);
+	}
 
     public void browse(String folder) {
         this.device = uPnPService.getMediaDevice();
@@ -43,12 +57,14 @@ public class MediaServer {
         service = device.findService(new UDAServiceId("ContentDirectory"));
         ActionCallback browseAction = new Browse(service, folder, BrowseFlag.DIRECT_CHILDREN) {
 
+			
+
             @Override
             public void received(ActionInvocation actionInvocation, DIDLContent didlContent) {
                 fileList = didlContent.getItems();
                 folderList = didlContent.getContainers();
 
-                final ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
+                list.clear();
 
                 for (Container folder : folderList) {
                     list.add(folder);

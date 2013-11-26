@@ -23,7 +23,25 @@ import java.util.ArrayList;
 /**
  * Created by wonyoungjang on 2013. 11. 18..
  */
-public class MyUPnPService implements UPnPService {
+public class MyUPnPService implements UPnPService
+{
+
+	private PlaylistAdapter playlistAdapter
+	 = new PlaylistAdapter();
+
+	public PlaylistAdapter getPlaylistAdapter()
+	{
+		return playlistAdapter;
+	}
+	
+
+	private MediaServer mediaServer = new MediaServer(this);
+
+	public MediaServer getMediaServer()
+	{
+		return mediaServer;
+	}
+	
     private MainActivity activity;
     private Context context;
     private AndroidUpnpService upnpService;
@@ -90,16 +108,22 @@ public class MyUPnPService implements UPnPService {
     @Override
     public void setOnMediaServerChangeListener(OnMediaServerChangeListener listener) {
         mediaServerChangeListener = listener;
-        listener.OnMediaServerChanged(mediaServerDevice);
     }
 
     @Override
     public void setMediaServer(Device device) {
-        mediaServerDevice = device;
-        if (mediaServerChangeListener != null) {
-            mediaServerChangeListener.OnMediaServerChanged(device);
-        }
+		if (mediaServerDevice != device) {
+			applyMediaServer(device);
+		}
     }
+
+	private void applyMediaServer(Device device)
+	{
+		mediaServerDevice = device;
+		if (mediaServerChangeListener != null) {
+			mediaServerChangeListener.OnMediaServerChanged(device);
+		}
+	}
 
     @Override
     public void setRenderer(Device device) {

@@ -19,11 +19,14 @@ import java.util.ArrayList;
 public class DeviceAdapter extends BaseAdapter implements DeviceSubscriber {
     public final static ServiceType SERVICE_TYPE_RENDERER = new UDAServiceType("AVTransport");
     public final static ServiceType SERVICE_TYPE_MEDIA_SERVER = new UDAServiceType("ContentDirectory");
-
+// move to filter
     private Activity activity;
     private ServiceType serviceTypeFilter;
     protected ArrayList<Device> devices = new ArrayList<Device>();
 
+	private Device userSelected = null;
+	private Device selectedDevice = null;
+	
     public DeviceAdapter(Activity activity, ServiceType serviceTypeFilter) {
         this.activity = activity;
         this.serviceTypeFilter = serviceTypeFilter;
@@ -73,6 +76,12 @@ public class DeviceAdapter extends BaseAdapter implements DeviceSubscriber {
                 if (position >= 0) {
                     devices.set(position, item);
                 } else {
+					if (item == userSelected) {
+						selectedDevice = item;
+					}
+					if (selectedDevice == null) {
+						selectedDevice = item;
+					}
                     devices.add(item);
                 }
                 update();

@@ -11,7 +11,14 @@ import org.fourthline.cling.model.meta.Device;
 /**
  * Created by wonyoungjang on 13. 10. 19..
  */
-public interface UPnPService {
+public interface UPnPService
+{
+
+	public PlaylistAdapter getPlaylistAdapter();
+
+
+	public MediaServer getMediaServer();
+
 
     void setMediaServer(Device device);
 

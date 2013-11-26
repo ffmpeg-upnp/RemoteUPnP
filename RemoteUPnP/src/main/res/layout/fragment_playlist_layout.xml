@@ -7,11 +7,10 @@
 	<Button
 		android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:text="Add List"
-        android:id="@+id/addAll" />
-		
+		android:text="Play All"
+        android:id="@+id/playAll" />
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/listView" />
+        android:id="@+id/playlistView" />
 </LinearLayout>

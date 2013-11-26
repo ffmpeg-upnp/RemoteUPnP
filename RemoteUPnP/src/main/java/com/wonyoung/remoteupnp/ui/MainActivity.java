@@ -132,13 +132,15 @@ public class MainActivity extends FragmentActivity
                 case 2:
                     playerFragment = new PlayerFragment();
                     return playerFragment;
+				case 3:
+				 return new PlaylistFragment();
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -151,6 +153,8 @@ public class MainActivity extends FragmentActivity
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+				case 3:
+				return "list";//getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
         }
