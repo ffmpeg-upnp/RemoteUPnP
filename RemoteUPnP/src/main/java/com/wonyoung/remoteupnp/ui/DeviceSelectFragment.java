@@ -1,19 +1,21 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.ui;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.wonyoung.remoteupnp.DeviceAdapter;
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.UPnPService;
 
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;

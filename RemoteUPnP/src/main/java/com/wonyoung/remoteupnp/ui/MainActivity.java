@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.ui;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -9,6 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+
+import com.wonyoung.remoteupnp.MyUPnPService;
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.UPnPService;
 
 import org.fourthline.cling.model.meta.Device;
 

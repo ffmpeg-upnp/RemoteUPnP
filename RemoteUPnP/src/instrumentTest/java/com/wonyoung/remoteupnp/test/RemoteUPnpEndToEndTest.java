@@ -2,9 +2,7 @@ package com.wonyoung.remoteupnp.test;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import com.wonyoung.remoteupnp.MainActivity;
-
-import junit.framework.TestCase;
+import com.wonyoung.remoteupnp.ui.MainActivity;
 
 public class RemoteUPnpEndToEndTest extends ActivityInstrumentationTestCase2<MainActivity> {
 

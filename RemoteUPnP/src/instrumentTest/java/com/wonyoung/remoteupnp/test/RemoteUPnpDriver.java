@@ -1,7 +1,7 @@
 package com.wonyoung.remoteupnp.test;
 
 import com.jayway.android.robotium.solo.Solo;
-import com.wonyoung.remoteupnp.MainActivity;
+import com.wonyoung.remoteupnp.ui.MainActivity;
 import com.wonyoung.remoteupnp.UPnPService;
 
 import org.fourthline.cling.model.meta.Device;

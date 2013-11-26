@@ -1,24 +1,19 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.ui;
 
-import android.app.Activity;
-import android.content.Context;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import org.fourthline.cling.Main;
+import com.wonyoung.remoteupnp.FolderViewAdapter;
+import com.wonyoung.remoteupnp.MediaServer;
+import com.wonyoung.remoteupnp.OnMediaServerChangeListener;
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.UPnPService;
+
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -27,16 +22,8 @@ import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.UDAServiceId;
 import org.fourthline.cling.support.avtransport.callback.Play;
 import org.fourthline.cling.support.avtransport.callback.SetAVTransportURI;
-import org.fourthline.cling.support.contentdirectory.callback.Browse;
-import org.fourthline.cling.support.model.BrowseFlag;
-import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
-import org.fourthline.cling.support.model.container.Container;
-import org.fourthline.cling.support.model.item.Item;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..
