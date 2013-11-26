@@ -1,7 +1,13 @@
 package com.wonyoung.remoteupnp.test;
 
+import android.content.ServiceConnection;
+import android.support.v4.app.FragmentActivity;
+
+import com.wonyoung.remoteupnp.DeviceSubscriber;
+import com.wonyoung.remoteupnp.OnMediaServerChangeListener;
 import com.wonyoung.remoteupnp.UPnPService;
 
+import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.Namespace;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.meta.Action;
@@ -37,16 +43,6 @@ public class FakeUPnPService implements UPnPService {
     private boolean deviceListUpdated = false;
     private RegistryListener registryListener;
 
-    @Override
-    public void addListener(RegistryListener registryListener) {
-        this.registryListener = registryListener;
-    }
-
-    @Override
-    public void updateDeviceList() {
-        deviceListUpdated = true;
-    }
-
     public void hasReceivedDeviceListRequest() {
         assertThat(registryListener, notNullValue());
         assertThat(deviceListUpdated, equalTo(true));
@@ -57,5 +53,55 @@ public class FakeUPnPService implements UPnPService {
         for (LocalDevice device : devices) {
             registryListener.localDeviceAdded(null, device);
         }
+    }
+
+    @Override
+    public void setMediaServer(Device device) {
+
+    }
+
+    @Override
+    public void setRenderer(Device device) {
+
+    }
+
+    @Override
+    public void execute(ActionCallback action) {
+
+    }
+
+    @Override
+    public void addListener(DeviceSubscriber listener) {
+
+    }
+
+    @Override
+    public void unbind() {
+
+    }
+
+    @Override
+    public Device getMediaDevice() {
+        return null;
+    }
+
+    @Override
+    public Device getRendererDevice() {
+        return null;
+    }
+
+    @Override
+    public void setOnMediaServerChangeListener(OnMediaServerChangeListener listener) {
+
+    }
+
+    @Override
+    public void bind(FragmentActivity activity) {
+
+    }
+
+    @Override
+    public ServiceConnection getServiceConnection() {
+        return null;
     }
 }

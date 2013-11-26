@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.wonyoung.remoteupnp.ui.MainActivity;
@@ -23,11 +24,11 @@ import java.util.ArrayList;
  * Created by wonyoungjang on 2013. 11. 18..
  */
 public class MyUPnPService implements UPnPService {
-    private final MainActivity activity;
+    private MainActivity activity;
     private Context context;
     private AndroidUpnpService upnpService;
 
-    private BrowseRegistryListener registryListener;
+    private BrowseRegistryListener registryListener = new BrowseRegistryListener();
     private ArrayList<Device> devices = new ArrayList<Device>();
 
     private Device mediaServerDevice;
@@ -35,8 +36,9 @@ public class MyUPnPService implements UPnPService {
 
     private boolean bounded = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
-
+        @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d("bind", "Bounded connection - " + this );
             upnpService = (AndroidUpnpService) service;
 
             // Clear the list
@@ -55,6 +57,7 @@ public class MyUPnPService implements UPnPService {
             bounded = true;
         }
 
+        @Override
         public void onServiceDisconnected(ComponentName className) {
             upnpService = null;
             bounded = false;
@@ -63,17 +66,15 @@ public class MyUPnPService implements UPnPService {
     private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
     private OnMediaServerChangeListener mediaServerChangeListener;
 
-    public MyUPnPService(Context context) {
+    @Override
+    public void bind(FragmentActivity context) {
         this.activity = (MainActivity) context; // temp. code for browse
         this.context = context.getApplicationContext();
+    }
 
-        registryListener = new BrowseRegistryListener();
-
-        context.bindService(
-                new Intent(context, RendererUpnpService.class),
-                serviceConnection,
-                Context.BIND_AUTO_CREATE
-        );
+    @Override
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
     }
 
     @Override
@@ -119,12 +120,12 @@ public class MyUPnPService implements UPnPService {
     }
 
     @Override
-    public void destroy() {
+    public void unbind() {
         if (upnpService != null) {
             upnpService.getRegistry().removeListener(registryListener);
         }
         if (bounded) {
-            context.unbindService(serviceConnection);
+            Log.d("bind", "try to unbound - " + serviceConnection );
             bounded = false;
         }
     }

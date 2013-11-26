@@ -2,6 +2,8 @@ package com.wonyoung.remoteupnp.ui;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +14,7 @@ import android.view.Menu;
 
 import com.wonyoung.remoteupnp.MyUPnPService;
 import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.RendererUpnpService;
 import com.wonyoung.remoteupnp.UPnPService;
 
 import org.fourthline.cling.model.meta.Device;
@@ -24,7 +27,7 @@ public class MainActivity extends FragmentActivity
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
 
-    private UPnPService service;
+    private UPnPService service = new MyUPnPService();
     private Device renderer;
     private Device mediaServer;
 
@@ -33,8 +36,12 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpActionBarAndViewPager();
-
-        service = new MyUPnPService(this);
+        Context context = getApplicationContext();
+        context.bindService(
+                new Intent(context, RendererUpnpService.class),
+                service.getServiceConnection(),
+                Context.BIND_AUTO_CREATE
+        );
     }
 
     private void setUpActionBarAndViewPager() {
@@ -72,9 +79,9 @@ public class MainActivity extends FragmentActivity
 
     @Override
     protected void onDestroy() {
-//        service.destroy();
-
         super.onDestroy();
+        service.unbind();
+        getApplicationContext().unbindService(service.getServiceConnection());
     }
 
     @Override

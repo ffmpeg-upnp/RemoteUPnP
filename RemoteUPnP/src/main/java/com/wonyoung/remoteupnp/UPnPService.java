@@ -1,5 +1,10 @@
 package com.wonyoung.remoteupnp;
 
+import android.content.ServiceConnection;
+import android.support.v4.app.FragmentActivity;
+
+import com.wonyoung.remoteupnp.ui.MainActivity;
+
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.meta.Device;
 
@@ -16,11 +21,15 @@ public interface UPnPService {
 
     void addListener(DeviceSubscriber listener);
 
-    void destroy();
+    void unbind();
 
     Device getMediaDevice();
 
     Device getRendererDevice();
 
     void setOnMediaServerChangeListener(OnMediaServerChangeListener listener);
+
+    void bind(FragmentActivity activity);
+
+    ServiceConnection getServiceConnection();
 }

@@ -38,6 +38,5 @@ public class RemoteUPnpDriver {
     }
 
     public void browse(Device mediaServer, String folder) {
-        activity.browse(mediaServer, folder);
     }
 }
