@@ -14,6 +14,7 @@ import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.DescMeta;
 
 import java.util.ArrayList;
+import org.fourthline.cling.support.model.*;
 
 /**
  * Created by wonyoungjang on 2013. 11. 23..
@@ -51,6 +52,7 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
             holder = new ViewHolder();
             holder.icon = (ImageView) convertView.findViewById(R.id.itemIcon);
             holder.title = (TextView) convertView.findViewById(R.id.itemTitle);
+			holder.duration = (TextView) convertView.findViewById(R.id.itemDuration);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -67,6 +69,11 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
 
 //        holder.icon.setImageBitmap(null);
         holder.title.setText(item.getTitle());
+		Res res = item.getFirstResource();
+		if (res != null) {
+			holder.duration.setText(res.getDuration());
+		}
+
         return convertView;
     }
 
@@ -89,5 +96,7 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
 
         public ImageView icon;
         public TextView title;
+
+		public TextView duration;
     }
 }

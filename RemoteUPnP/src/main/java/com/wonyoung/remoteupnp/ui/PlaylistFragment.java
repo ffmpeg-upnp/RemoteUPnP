@@ -37,7 +37,7 @@ public class PlaylistFragment extends Fragment {
 
 	private void playFrom(int p0)
 	{
-		if (p0 >= adapter.getCount() - 1) {
+		if (p0 >= adapter.getCount()) {
 			return;
 		}
 	    Item item = (Item) adapter.getItem(p0);
@@ -138,6 +138,8 @@ public class PlaylistFragment extends Fragment {
 					if (resource != null) {
 						play(resource.getValue());
 					}
+					Toast.makeText(activity.getApplicationContext(), "" + resource.getDuration(),
+					Toast.LENGTH_SHORT).show();
 				}
 			});
 			
