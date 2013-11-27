@@ -21,12 +21,14 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:text="New Text"
         android:id="@+id/itemTitle"
-        android:layout_gravity="left" />
+        android:layout_gravity="left"
+        android:layout_toRightOf="@+id/itemIcon" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,5 +37,13 @@
         android:layout_alignParentRight="true"
         android:id="@+id/itemDuration"
         android:layout_gravity="bottom" />
-	
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/itemInfo"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/itemIcon" />
+
 </RelativeLayout>

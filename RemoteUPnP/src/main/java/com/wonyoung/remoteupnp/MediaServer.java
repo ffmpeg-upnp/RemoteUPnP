@@ -12,6 +12,7 @@ import org.fourthline.cling.support.contentdirectory.callback.Browse;
 import org.fourthline.cling.support.model.BrowseFlag;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
+import org.fourthline.cling.support.model.DescMeta;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.item.Item;
 
@@ -76,6 +77,7 @@ public class MediaServer {
                         Log.e("remoteUpnp", String.format("url : [%s] ", item.getFirstResource().getValue()));
 
                 }
+
                 subscriber.updatedFolderList(list);
             }
 
