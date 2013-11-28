@@ -1,6 +1,7 @@
 package com.wonyoung.remoteupnp;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
+import org.fourthline.cling.controlpoint.SubscriptionCallback;
 import org.fourthline.cling.model.meta.Device;
 
 import android.content.ServiceConnection;
@@ -37,4 +38,7 @@ public interface UPnPService
     void bind(FragmentActivity activity);
 
     ServiceConnection getServiceConnection();
+
+
+    void execute(SubscriptionCallback callback);
 }

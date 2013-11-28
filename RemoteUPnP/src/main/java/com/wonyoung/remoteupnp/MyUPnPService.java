@@ -3,22 +3,38 @@ package com.wonyoung.remoteupnp;
 import java.util.ArrayList;
 
 import org.fourthline.cling.android.AndroidUpnpService;
+import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.controlpoint.ActionCallback;
+import org.fourthline.cling.controlpoint.SubscriptionCallback;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
+import org.fourthline.cling.model.meta.LocalService;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
+import org.fourthline.cling.support.avtransport.impl.AVTransportService;
+import org.fourthline.cling.support.avtransport.impl.AVTransportStateMachine;
+import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser;
+import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
+import org.fourthline.cling.support.lastchange.LastChangeParser;
+import org.seamless.statemachine.States;
+
+import com.wonyoung.remoteupnp.renderer.SimpleRendererNoMediaPresent;
+import com.wonyoung.remoteupnp.renderer.SimpleRendererPlaying;
+import com.wonyoung.remoteupnp.renderer.SimpleRendererStopped;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.wonyoung.remoteupnp.ui.MainActivity;
-
+@States({
+    SimpleRendererNoMediaPresent.class,
+    SimpleRendererStopped.class,
+    SimpleRendererPlaying.class
+})
+interface SimpleRendererStateMachine extends AVTransportStateMachine {}
 /**
  * Created by wonyoungjang on 2013. 11. 18..
  */
@@ -49,6 +65,8 @@ public class MyUPnPService implements UPnPService
     private Device mediaServerDevice;
     private Device renderer;
 
+    
+    
     private boolean bounded = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -56,6 +74,8 @@ public class MyUPnPService implements UPnPService
             Log.d("bind", "Bounded connection - " + this );
             upnpService = (AndroidUpnpService) service;
 
+            addLocalRenderer();
+            
             // Clear the list
             devices.clear();
 
@@ -72,6 +92,7 @@ public class MyUPnPService implements UPnPService
             bounded = true;
         }
 
+
         @Override
         public void onServiceDisconnected(ComponentName className) {
             upnpService = null;
@@ -81,6 +102,27 @@ public class MyUPnPService implements UPnPService
     private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
     private OnMediaServerChangeListener mediaServerChangeListener;
 
+    private void addLocalRenderer() {
+        LocalService<AVTransportService> service =
+                new AnnotationLocalServiceBinder().read(AVTransportService.class);
+
+        // Service's which have "logical" instances are very special, they use the
+        // "LastChange" mechanism for eventing. This requires some extra wrappers.
+        LastChangeParser lastChangeParser = new AVTransportLastChangeParser();
+
+        service.setManager(
+                new LastChangeAwareServiceManager<AVTransportService>(service, lastChangeParser) {
+                    @Override
+                    protected AVTransportService createServiceInstance() throws Exception {
+                        return new AVTransportService(
+                                SimpleRendererStateMachine.class,   // All states
+                                SimpleRendererNoMediaPresent.class  // Initial state
+                        );
+                    }
+                }
+        );
+    }
+    
     @Override
     public void bind(FragmentActivity context) {
     }
@@ -130,6 +172,11 @@ public class MyUPnPService implements UPnPService
         upnpService.getControlPoint().execute(action);
     }
 
+    @Override
+    public void execute(SubscriptionCallback callback) {
+        upnpService.getControlPoint().execute(callback);
+    }
+    
     @Override
     public void addListener(DeviceSubscriber listener) {
         listeners.add(listener);

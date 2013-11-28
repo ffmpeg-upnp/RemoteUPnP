@@ -1,19 +1,30 @@
 package com.wonyoung.remoteupnp.ui;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.fourthline.cling.controlpoint.ActionCallback;
+import org.fourthline.cling.controlpoint.SubscriptionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;
+import org.fourthline.cling.model.gena.CancelReason;
+import org.fourthline.cling.model.gena.GENASubscription;
 import org.fourthline.cling.model.message.UpnpResponse;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.Service;
+import org.fourthline.cling.model.state.StateVariableValue;
 import org.fourthline.cling.model.types.UDAServiceId;
 import org.fourthline.cling.support.avtransport.callback.Play;
 import org.fourthline.cling.support.avtransport.callback.SetAVTransportURI;
+import org.fourthline.cling.support.lastchange.Event;
+import org.fourthline.cling.support.lastchange.LastChangeParser;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
 import org.fourthline.cling.support.model.item.Item;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,8 +95,48 @@ public class PlaylistFragment extends Fragment {
         Service service = device.findService(new UDAServiceId("AVTransport"));
 
         if (service != null) {
+            final SubscriptionCallback callback = new SubscriptionCallback(service) {
+                
+                @Override
+                protected void failed(GENASubscription sub, UpnpResponse response,
+                        Exception ex, String arg3) {
+                    Log.d("remoteUpnp", arg3 + " "+ createDefaultFailureMessage(response, ex));
+                }
+                
+                @Override
+                protected void eventsMissed(GENASubscription sub, int numberOfMissedEvents) {
+                    Log.d("remoteUpnp", "Missed events: " + numberOfMissedEvents);
+                }
+                
+                @Override
+                protected void eventReceived(GENASubscription sub) {
+                    Log.d("remoteUpnp", "Event: " + sub.getCurrentSequence().getValue());
+                    Map<String, StateVariableValue> values = sub.getCurrentValues();
+                    StateVariableValue value = values.get("LastChange");
+                    
+                    for (Entry<String, StateVariableValue> entry : values.entrySet()) {
+                        Log.d("remoteUpnp", entry.getKey() + " is: " + entry.getValue().toString());
+                        
+                    }
+                }
+                
+                @Override
+                protected void established(GENASubscription sub) {
+                    Log.d("remoteUpnp", "Established: " + sub.getSubscriptionId());
+                }
+                
+                @Override
+                protected void ended(GENASubscription sub, CancelReason arg1,
+                        UpnpResponse arg2) {
+                    Log.d("remoteUpnp", "ended: " + sub.getSubscriptionId());
+                }
+            };
+            
 			final ActionCallback playAction = new Play(service) {
-
+                @Override
+                public void success(ActionInvocation p1) {
+                    uPnPService.execute(callback);
+                }
                 @Override
                 public void failure(ActionInvocation actionInvocation, UpnpResponse upnpResponse, String s) {
 
