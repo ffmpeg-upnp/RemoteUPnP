@@ -1,11 +1,15 @@
 package com.wonyoung.remoteupnp;
 
+import java.util.ArrayList;
+
+import org.fourthline.cling.support.model.DIDLObject;
+import org.fourthline.cling.support.model.ProtocolInfo;
+import org.fourthline.cling.support.model.Res;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,16 +18,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.fourthline.cling.support.model.DIDLObject;
-import org.fourthline.cling.support.model.DescMeta;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.fourthline.cling.support.model.*;
-import org.fourthline.cling.support.model.item.Item;
 
 /**
  * Created by wonyoungjang on 2013. 11. 23..
@@ -87,14 +81,13 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
 //        holder.icon.setImageBitmap(null);
         holder.title.setText(item.getTitle());
 		Res res = item.getFirstResource();
+		String albumArtUrl = null;
 		if (res != null) {
-            Item i = (Item) item;
 			holder.duration.setText(res.getDuration());
             holder.info.setText(res.getProtocolInfo().getNetwork());
-
-            if (position == 0)
-            new AlbumArtLoadTask(holder.icon).execute(res.getValue());
+            albumArtUrl = res.getValue();
 		}
+		new AlbumArtLoadTask(holder.icon).execute(albumArtUrl);
 
         return convertView;
     }
@@ -133,16 +126,18 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
         @Override
         protected Bitmap doInBackground(String... params) {
             String url = params[0];
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(url, new HashMap<String, String>());
+            if (url == null) {
+                return BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_menu_more);
+            }
+//            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//            retriever.setDataSource(url, new HashMap<String, String>());
 
-            return null;
 //            try {
 //                byte[] art = retriever.getEmbeddedPicture();
 //                return BitmapFactory.decodeByteArray(art, 0, art.length);
 //            } catch (Exception e) {
-//                return null;// BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_dialog_info);
 //            }
+            return BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_media_play);
         }
 
         @Override

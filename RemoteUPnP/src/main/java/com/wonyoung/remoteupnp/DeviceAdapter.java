@@ -1,5 +1,17 @@
 package com.wonyoung.remoteupnp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+
+import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.Icon;
+import org.fourthline.cling.model.meta.RemoteDevice;
+import org.fourthline.cling.model.meta.Service;
+import org.fourthline.cling.model.types.ServiceType;
+import org.fourthline.cling.model.types.UDAServiceType;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,24 +24,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.fourthline.cling.model.meta.Device;
-import org.fourthline.cling.model.meta.Icon;
-import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.types.ServiceType;
-import org.fourthline.cling.model.types.UDAServiceType;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-
-import static org.seamless.util.io.IO.copy;
-import static org.seamless.util.io.IO.toInputStream;
 
 /**
  * Created by wonyoung.jang on 13. 11. 22.

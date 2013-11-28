@@ -1,19 +1,5 @@
 package com.wonyoung.remoteupnp.ui;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-
-import com.wonyoung.remoteupnp.FolderViewAdapter;
-import com.wonyoung.remoteupnp.MediaServer;
-import com.wonyoung.remoteupnp.OnMediaServerChangeListener;
-import com.wonyoung.remoteupnp.R;
-import com.wonyoung.remoteupnp.UPnPService;
-
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -24,9 +10,21 @@ import org.fourthline.cling.support.avtransport.callback.Play;
 import org.fourthline.cling.support.avtransport.callback.SetAVTransportURI;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
-import com.wonyoung.remoteupnp.*;
-import android.widget.*;
-import org.fourthline.cling.support.model.item.*;
+import org.fourthline.cling.support.model.item.Item;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.wonyoung.remoteupnp.PlaylistAdapter;
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.UPnPService;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..

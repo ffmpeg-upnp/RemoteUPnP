@@ -23,8 +23,6 @@ import java.util.List;
  * Created by wonyoungjang on 2013. 11. 23..
  */
 public class MediaServer {
-    private Service service;
-    private Device device;
     private UPnPService uPnPService;
     private FolderSubscriber subscriber;
 
@@ -52,13 +50,11 @@ public class MediaServer {
 	}
 
     public void browse(String folder) {
-        this.device = uPnPService.getMediaDevice();
+        Device device = uPnPService.getMediaDevice();
         if (device == null) return;
 
-        service = device.findService(new UDAServiceId("ContentDirectory"));
+        Service service = device.findService(new UDAServiceId("ContentDirectory"));
         ActionCallback browseAction = new Browse(service, folder, BrowseFlag.DIRECT_CHILDREN) {
-
-			
 
             @Override
             public void received(ActionInvocation actionInvocation, DIDLContent didlContent) {

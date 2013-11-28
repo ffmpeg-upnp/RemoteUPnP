@@ -1,14 +1,6 @@
 package com.wonyoung.remoteupnp;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-
-import com.wonyoung.remoteupnp.ui.MainActivity;
+import java.util.ArrayList;
 
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.controlpoint.ActionCallback;
@@ -18,7 +10,14 @@ import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 
-import java.util.ArrayList;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+
+import com.wonyoung.remoteupnp.ui.MainActivity;
 
 /**
  * Created by wonyoungjang on 2013. 11. 18..
@@ -42,8 +41,6 @@ public class MyUPnPService implements UPnPService
 		return mediaServer;
 	}
 	
-    private MainActivity activity;
-    private Context context;
     private AndroidUpnpService upnpService;
 
     private BrowseRegistryListener registryListener = new BrowseRegistryListener();
@@ -86,8 +83,6 @@ public class MyUPnPService implements UPnPService
 
     @Override
     public void bind(FragmentActivity context) {
-        this.activity = (MainActivity) context; // temp. code for browse
-        this.context = context.getApplicationContext();
     }
 
     @Override

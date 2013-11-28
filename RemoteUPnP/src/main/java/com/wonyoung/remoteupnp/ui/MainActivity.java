@@ -28,8 +28,6 @@ public class MainActivity extends FragmentActivity
     ViewPager mViewPager;
 
     private UPnPService service = new MyUPnPService();
-    private Device renderer;
-    private Device mediaServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,10 +163,8 @@ public class MainActivity extends FragmentActivity
     }
 
     public void setRenderer(Device renderer) {
-        this.renderer = renderer;
     }
 
     public void setMediaServer(Device mediaServer) {
-        this.mediaServer = mediaServer;
     }
 }

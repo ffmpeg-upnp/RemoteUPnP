@@ -1,12 +1,10 @@
 package com.wonyoung.remoteupnp;
 
-import android.content.ServiceConnection;
-import android.support.v4.app.FragmentActivity;
-
-import com.wonyoung.remoteupnp.ui.MainActivity;
-
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.meta.Device;
+
+import android.content.ServiceConnection;
+import android.support.v4.app.FragmentActivity;
 
 /**
  * Created by wonyoungjang on 13. 10. 19..
