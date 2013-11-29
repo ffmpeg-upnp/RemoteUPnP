@@ -41,6 +41,15 @@ interface SimpleRendererStateMachine extends AVTransportStateMachine {}
 public class MyUPnPService implements UPnPService
 {
 
+	private OnRendererChangeListener rendererChangeListener;
+
+	public void setOnRendererChangeListener(OnRendererChangeListener listener)
+	{
+		rendererChangeListener = listener;
+		// TODO: Implement this method
+	}
+
+
 	private PlaylistAdapter playlistAdapter
 	 = new PlaylistAdapter();
 
@@ -156,6 +165,7 @@ public class MyUPnPService implements UPnPService
 
     @Override
     public void setRenderer(Device device) {
+		rendererChangeListener.OnRendererChanged(device);
         renderer = device;
     }
 

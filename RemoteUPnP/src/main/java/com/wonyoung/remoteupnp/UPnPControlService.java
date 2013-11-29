@@ -52,6 +52,13 @@ public class UPnPControlService extends Service
 	private class BinderImpl extends Binder implements UPnPService
 	{
 
+		public void setOnRendererChangeListener(OnRendererChangeListener listner)
+		{
+			// TODO: Implement this method
+			service.setOnRendererChangeListener(listner);
+		}
+
+
 		public PlaylistAdapter getPlaylistAdapter()
 		{
 			// TODO: Implement this method

@@ -24,11 +24,13 @@ import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.DeviceDetails;
 import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.meta.Service;
+import com.wonyoung.remoteupnp.*;
 
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
-public class DeviceSelectFragment extends Fragment {
+public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
+{
     private static final String TAG = DeviceSelectFragment.class.getName();
     private DeviceAdapter rendererAdapter;
     private DeviceAdapter mediaServerAdapter;
@@ -118,50 +120,25 @@ public class DeviceSelectFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart");
-        MainActivity activity = (MainActivity) getActivity();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+		
+		MainActivity activity = (MainActivity) getActivity();
         rendererAdapter = new DeviceAdapter(activity,
-                DeviceAdapter.SERVICE_TYPE_RENDERER);
+											DeviceAdapter.SERVICE_TYPE_RENDERER);
         ListView rendererListView = (ListView) activity
-                .findViewById(R.id.renderer_list);
+			.findViewById(R.id.renderer_list);
         rendererListView.setAdapter(rendererAdapter);
         rendererListView.setOnItemClickListener(rendererOnItemClick);
 
         mediaServerAdapter = new DeviceAdapter(activity,
-                DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
+											   DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
         ListView mediaServerListView = (ListView) activity
-                .findViewById(R.id.media_server_list);
+			.findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerAdapter);
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
 
         registerAdapter();
-    }
-
-    @Override
-    public void onStop() {
-        Log.d(TAG, "onStop");
-        super.onStop();
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        Log.d(TAG, "onActivityCreated");
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        Log.d(TAG, "onAttach");
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-
-        super.onDestroy();
     }
 
     @Override
@@ -172,25 +149,28 @@ public class DeviceSelectFragment extends Fragment {
         super.onDestroyView();
     }
 
-    @Override
-    public void onDetach() {
-        Log.d(TAG, "onDetach");
-
-        super.onDetach();
-    }
-
     private void unregisterAdapter() {
         Log.d(TAG, "unregisterAdapter");
         MainActivity activity = (MainActivity) getActivity();
-        activity.removeListener(rendererAdapter);
-        activity.removeListener(mediaServerAdapter);
+        activity.removeListener(this);
     }
 
     public void registerAdapter() {
         Log.d(TAG, "registerAdapter");
 
         MainActivity activity = (MainActivity) getActivity();
-        activity.addListener(rendererAdapter);
-        activity.addListener(mediaServerAdapter);
+        activity.addListener(this);
     }
+
+	public void add(Device item)
+	{
+		rendererAdapter.add(item);
+		mediaServerAdapter.add(item);
+	}
+
+	public void remove(Device item)
+	{
+		rendererAdapter.remove(item);
+		mediaServerAdapter.remove(item);
+	}
 }

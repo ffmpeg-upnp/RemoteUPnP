@@ -25,45 +25,16 @@ import org.fourthline.cling.support.avtransport.callback.SetAVTransportURI;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
 import android.widget.*;
+import com.wonyoung.remoteupnp.*;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
 public class LibrarySelectFragment extends Fragment {
-    private UPnPService uPnPService;
-    public MediaServer mediaServer = new MediaServer();
+//    private UPnPService uPnPService;
+    private MediaServer mediaServer = new MediaServer();
+	private Renderer renderer;
     private FolderViewAdapter adapter;
-
-
-    private void play(String url) {
-        Device device = uPnPService.getRendererDevice();
-        Service service = device.findService(new UDAServiceId("AVTransport"));
-
-        if (service != null) {
-			final ActionCallback playAction = new Play(service) {
-
-                @Override
-                public void failure(ActionInvocation actionInvocation, UpnpResponse upnpResponse, String s) {
-
-                }
-            };
-			
-			
-            ActionCallback setAVTransportURIAction = new SetAVTransportURI(service, url, "NO METADATA") {
-				@Override
-				public void success(ActionInvocation p1) {
-					uPnPService.execute(playAction);
-				}
-				@Override
-                public void failure(ActionInvocation actionInvocation, UpnpResponse upnpResponse, String s) {
-
-                }
-            };
-
-         
-            uPnPService.execute(setAVTransportURIAction);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +48,7 @@ public class LibrarySelectFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final MainActivity activity = (MainActivity) getActivity();
-        this.uPnPService = activity.getUPnPService();
+        this.renderer = activity.getRenderer();
 
         adapter = new FolderViewAdapter(activity);
         ListView listView = (ListView) activity.findViewById(R.id.listView);
@@ -90,7 +61,7 @@ public class LibrarySelectFragment extends Fragment {
 
                 Res resource = item.getFirstResource();
                 if (resource != null) {
-                    play(resource.getValue());
+                    renderer.play(resource.getValue());
                 }
             }
         });
@@ -114,7 +85,7 @@ public class LibrarySelectFragment extends Fragment {
 
     public void updateMediaServer(Device device) {
 		final MainActivity activity = (MainActivity) getActivity();
-        this.uPnPService = activity.getUPnPService();
+        UPnPService uPnPService = activity.getUPnPService();
 		mediaServer.updateDevice(uPnPService, device);
         browseRoot();
     }

@@ -19,13 +19,32 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 public class MainActivity extends FragmentActivity implements
-        ActionBar.TabListener, OnMediaServerChangeListener {
+ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
+{
+
+	public void OnRendererChanged(Device device)
+	{
+		renderer.updateDevice(uPnpService, device);
+		// TODO: Implement this method
+	}
+	
 
     protected static final String TAG = MainActivity.class.getName();
+
+	private DeviceSubscriber subscriber;
+
+	private final Renderer renderer = new Renderer();
+
+	public Renderer getRenderer()
+	{
+		// TODO: Implement this method
+		return renderer;
+	}
 
     public void OnMediaServerChanged(Device device) {
         mSectionsPagerAdapter.librarySelectFragment.updateMediaServer(device);
     }
+	
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
@@ -43,10 +62,12 @@ public class MainActivity extends FragmentActivity implements
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "upnpcontrolservice onServiceConnected");
             uPnpService = (UPnPService) service;
-            DeviceSelectFragment deviceSelectFragment = (DeviceSelectFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_device_select);
-            if (deviceSelectFragment != null)
-                deviceSelectFragment.registerAdapter();
+            
+            if (subscriber != null)
+                addListener(subscriber);
+			renderer.updateDevice(uPnpService, uPnpService.getRendererDevice());
             uPnpService.setOnMediaServerChangeListener(MainActivity.this);
+			uPnpService.setOnRendererChangeListener(MainActivity.this);
 
         }
     };
@@ -207,16 +228,18 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    public void addListener(DeviceAdapter rendererAdapter) {
+    public void addListener(DeviceSubscriber subscriber) {
+		this.subscriber = subscriber;
         if (uPnpService != null) {
-            uPnpService.addListener(rendererAdapter);
+            uPnpService.addListener(subscriber);
         }
         
     }
 
-    public void removeListener(DeviceAdapter rendererAdapter) {
+    public void removeListener(DeviceSubscriber subscriber) {
+		this.subscriber = subscriber;
         if (uPnpService != null) {
-            uPnpService.removeListener(rendererAdapter);
+            uPnpService.removeListener(subscriber);
         }
     }
 }

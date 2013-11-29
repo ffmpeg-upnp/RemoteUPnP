@@ -29,7 +29,7 @@ public interface UPnPService
     Device getRendererDevice();
 
     void setOnMediaServerChangeListener(OnMediaServerChangeListener listener);
-
+    void setOnRendererChangeListener(OnRendererChangeListener listner);
     void bind(FragmentActivity activity);
 
     ServiceConnection getServiceConnection();
