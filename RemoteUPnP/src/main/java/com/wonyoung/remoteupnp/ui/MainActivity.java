@@ -1,28 +1,35 @@
 package com.wonyoung.remoteupnp.ui;
 
-import android.app.ActionBar;
+import android.app.*;
+import android.content.*;
+import android.os.*;
+import android.support.v4.app.*;
+import android.support.v4.view.*;
+import android.view.*;
+import com.wonyoung.remoteupnp.*;
+import java.util.*;
+import org.fourthline.cling.model.meta.*;
+
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.Menu;
-
-import com.wonyoung.remoteupnp.MyUPnPService;
-import com.wonyoung.remoteupnp.R;
-import com.wonyoung.remoteupnp.RendererUpnpService;
-import com.wonyoung.remoteupnp.UPnPService;
-
-import org.fourthline.cling.model.meta.Device;
-
-import java.util.Locale;
 
 public class MainActivity extends FragmentActivity
-        implements ActionBar.TabListener {
+implements ActionBar.TabListener, OnMediaServerChangeListener
+{
+
+	public MediaServer getMediaServer()
+	{
+		return mediaServer;
+	}
+
+	private MediaServer mediaServer;
+
+	public void OnMediaServerChanged(Device device)
+	{
+		mediaServer = service.getMediaServer();
+		mSectionsPagerAdapter.librarySelectFragment.updateMediaServer();
+	}
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
@@ -30,19 +37,23 @@ public class MainActivity extends FragmentActivity
     private UPnPService service = new MyUPnPService();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setUpActionBarAndViewPager();
         Context context = getApplicationContext();
         context.bindService(
-                new Intent(context, RendererUpnpService.class),
-                service.getServiceConnection(),
-                Context.BIND_AUTO_CREATE
+			new Intent(context, RendererUpnpService.class),
+			service.getServiceConnection(),
+			Context.BIND_AUTO_CREATE
         );
+
+		service.setOnMediaServerChangeListener(this);
     }
 
-    private void setUpActionBarAndViewPager() {
+    private void setUpActionBarAndViewPager()
+	{
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -56,76 +67,93 @@ public class MainActivity extends FragmentActivity
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
+				@Override
+				public void onPageSelected(int position)
+				{
+					actionBar.setSelectedNavigationItem(position);
+				}
+			});
 
         // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++)
+		{
             // Create a tab with text corresponding to the page title defined by
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
             actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
+				actionBar.newTab()
+				.setText(mSectionsPagerAdapter.getPageTitle(i))
+				.setTabListener(this));
         }
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+	{
         super.onDestroy();
         service.unbind();
         getApplicationContext().unbindService(service.getServiceConnection());
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+	{
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+	{
     }
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction)
+	{
     }
 
-    public UPnPService getUPnPService() {
+    public UPnPService getUPnPService()
+	{
         return service;
     }
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter
+	{
 
         public PlayerFragment playerFragment;
         public LibrarySelectFragment librarySelectFragment;
         public DeviceSelectFragment deviceSelectFragment;
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public SectionsPagerAdapter(FragmentManager fm)
+		{
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int position) {
-            switch (position) {
+        public Fragment getItem(int position)
+		{
+            switch (position)
+			{
                 case 0:
                     deviceSelectFragment = new DeviceSelectFragment();
                     return deviceSelectFragment;
                 case 1:
                     librarySelectFragment = new LibrarySelectFragment();
+					if (service.getMediaDevice() != null)
+					{
+						mediaServer = service.getMediaServer();
+						librarySelectFragment.updateMediaServer();
+					}
                     return librarySelectFragment;
                 case 2:
                     playerFragment = new PlayerFragment();
@@ -137,14 +165,17 @@ public class MainActivity extends FragmentActivity
         }
 
         @Override
-        public int getCount() {
+        public int getCount()
+		{
             return 4;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(int position)
+		{
             Locale l = Locale.getDefault();
-            switch (position) {
+            switch (position)
+			{
                 case 0:
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
@@ -158,13 +189,16 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    public void setUPnPService(UPnPService upnpService) {
+    public void setUPnPService(UPnPService upnpService)
+	{
         this.service = upnpService;
     }
 
-    public void setRenderer(Device renderer) {
+    public void setRenderer(Device renderer)
+	{
     }
 
-    public void setMediaServer(Device mediaServer) {
+    public void setMediaServer(Device mediaServer)
+	{
     }
 }

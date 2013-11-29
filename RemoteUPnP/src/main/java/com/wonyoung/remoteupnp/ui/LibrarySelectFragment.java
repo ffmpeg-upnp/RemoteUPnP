@@ -29,7 +29,7 @@ import android.widget.*;
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends Fragment implements OnMediaServerChangeListener {
+public class LibrarySelectFragment extends Fragment {
     private UPnPService uPnPService;
     public MediaServer mediaServer;
     private FolderViewAdapter adapter;
@@ -94,10 +94,8 @@ public class LibrarySelectFragment extends Fragment implements OnMediaServerChan
                 }
             }
         });
-        mediaServer = uPnPService.getMediaServer();
-		mediaServer.setListener(adapter);
+        
 
-        uPnPService.setOnMediaServerChangeListener(this);
 		
 		Button addAll = (Button) activity.findViewById(R.id.addAll);
 		addAll.setOnClickListener(new View.OnClickListener() {
@@ -114,8 +112,10 @@ public class LibrarySelectFragment extends Fragment implements OnMediaServerChan
         mediaServer.browse("0");
     }
 
-    @Override
-    public void OnMediaServerChanged(Device device) {
+    public void updateMediaServer() {
+		final MainActivity activity = (MainActivity) getActivity();
+		mediaServer = activity.getMediaServer();
+		mediaServer.setListener(adapter);
         browseRoot();
     }
 }

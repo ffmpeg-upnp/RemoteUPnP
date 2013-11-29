@@ -30,6 +30,7 @@
         </activity>
 
         <service android:name=".RendererUpnpService" />
+		<service android:name=".UPnPColtrolService" />
 
     </application>
 
