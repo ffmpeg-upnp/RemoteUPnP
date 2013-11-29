@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.device;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wonyoung.remoteupnp.R;
 
 /**
  * Created by wonyoung.jang on 13. 11. 22.

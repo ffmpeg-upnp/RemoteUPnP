@@ -10,10 +10,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.wonyoung.remoteupnp.PlaylistAdapter;
+import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
 import com.wonyoung.remoteupnp.R;
-import com.wonyoung.remoteupnp.Renderer;
-import com.wonyoung.remoteupnp.UPnPService;
+import com.wonyoung.remoteupnp.renderer.Renderer;
+import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;

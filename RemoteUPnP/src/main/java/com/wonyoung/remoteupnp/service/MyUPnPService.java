@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.service;
 
 import java.util.ArrayList;
 
@@ -19,15 +19,18 @@ import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
 import org.fourthline.cling.support.lastchange.LastChangeParser;
 import org.seamless.statemachine.States;
 
-import com.wonyoung.remoteupnp.renderer.SimpleRendererNoMediaPresent;
-import com.wonyoung.remoteupnp.renderer.SimpleRendererPlaying;
-import com.wonyoung.remoteupnp.renderer.SimpleRendererStopped;
+import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
+import com.wonyoung.remoteupnp.device.DeviceSubscriber;
+import com.wonyoung.remoteupnp.localrenderer.SimpleRendererNoMediaPresent;
+import com.wonyoung.remoteupnp.localrenderer.SimpleRendererPlaying;
+import com.wonyoung.remoteupnp.localrenderer.SimpleRendererStopped;
+import com.wonyoung.remoteupnp.mediaserver.OnMediaServerChangeListener;
+import com.wonyoung.remoteupnp.renderer.OnRendererChangeListener;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 @States({

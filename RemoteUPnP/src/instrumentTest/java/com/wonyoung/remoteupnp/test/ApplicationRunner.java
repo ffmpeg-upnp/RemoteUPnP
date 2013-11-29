@@ -4,7 +4,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.jayway.android.robotium.solo.Solo;
 import com.wonyoung.remoteupnp.ui.MainActivity;
-import com.wonyoung.remoteupnp.UPnPService;
+import com.wonyoung.remoteupnp.service.UPnPService;
 import com.wonyoung.remoteupnp.folder.UPnPFolder;
 
 import org.fourthline.cling.model.meta.Device;

@@ -1,4 +1,7 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.mediaserver;
+
+import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
+import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;

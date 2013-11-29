@@ -13,8 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.wonyoung.remoteupnp.DeviceAdapter;
-import com.wonyoung.remoteupnp.DeviceSubscriber;
+import com.wonyoung.remoteupnp.device.DeviceAdapter;
+import com.wonyoung.remoteupnp.device.DeviceSubscriber;
 import com.wonyoung.remoteupnp.R;
 
 import org.fourthline.cling.model.meta.Action;
@@ -132,27 +132,15 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber {
         mediaServerListView.setAdapter(mediaServerAdapter);
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
 
-        registerAdapter();
+        ((MainActivity) getActivity()).addListener(this);
     }
 
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView");
-        unregisterAdapter();
+        ((MainActivity) getActivity()).removeListener(this);
 
         super.onDestroyView();
-    }
-
-    public void registerAdapter() {
-        Log.d(TAG, "registerAdapter");
-        MainActivity activity = (MainActivity) getActivity();
-        activity.addListener(this);
-    }
-
-    private void unregisterAdapter() {
-        Log.d(TAG, "unregisterAdapter");
-        MainActivity activity = (MainActivity) getActivity();
-        activity.removeListener(this);
     }
 
     public void add(Device item) {

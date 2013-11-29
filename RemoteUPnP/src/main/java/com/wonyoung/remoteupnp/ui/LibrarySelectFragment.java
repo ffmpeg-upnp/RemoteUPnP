@@ -9,11 +9,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.wonyoung.remoteupnp.FolderViewAdapter;
-import com.wonyoung.remoteupnp.MediaServer;
+import com.wonyoung.remoteupnp.mediaserver.FolderViewAdapter;
+import com.wonyoung.remoteupnp.mediaserver.MediaServer;
 import com.wonyoung.remoteupnp.R;
-import com.wonyoung.remoteupnp.Renderer;
-import com.wonyoung.remoteupnp.UPnPService;
+import com.wonyoung.remoteupnp.renderer.Renderer;
+import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.support.model.DIDLObject;

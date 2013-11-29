@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.mediaserver;
 
 import java.util.ArrayList;
 
@@ -18,6 +18,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
 
 /**
  * Created by wonyoungjang on 2013. 11. 23..

@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.service;
 
 import android.content.Intent;
 

@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp.renderer;
+package com.wonyoung.remoteupnp.localrenderer;
 
 import java.net.*;
 import org.fourthline.cling.support.avtransport.impl.state.*;

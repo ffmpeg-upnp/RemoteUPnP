@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.mediaserver;
 
 import org.fourthline.cling.model.meta.Device;
 

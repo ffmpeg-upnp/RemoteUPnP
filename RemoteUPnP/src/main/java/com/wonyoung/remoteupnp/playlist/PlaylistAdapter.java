@@ -1,4 +1,4 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.playlist;
 import android.widget.*;
 import android.view.*;
 import org.fourthline.cling.support.model.item.*;

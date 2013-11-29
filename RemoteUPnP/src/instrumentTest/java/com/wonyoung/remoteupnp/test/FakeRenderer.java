@@ -1,14 +1,11 @@
 package com.wonyoung.remoteupnp.test;
 
-import com.wonyoung.remoteupnp.Renderer;
+import com.wonyoung.remoteupnp.renderer.Renderer;
 import com.wonyoung.remoteupnp.folder.UPnPFolder;
 
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
-import org.fourthline.cling.model.Namespace;
 import org.fourthline.cling.model.ValidationException;
-import org.fourthline.cling.model.meta.Action;
-import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.DeviceDetails;
 import org.fourthline.cling.model.meta.DeviceIdentity;
 import org.fourthline.cling.model.meta.Icon;
@@ -16,26 +13,12 @@ import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.LocalService;
 import org.fourthline.cling.model.meta.ManufacturerDetails;
 import org.fourthline.cling.model.meta.ModelDetails;
-import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.model.meta.RemoteDeviceIdentity;
-import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.meta.StateVariable;
-import org.fourthline.cling.model.meta.UDAVersion;
-import org.fourthline.cling.model.resource.Resource;
 import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.ServiceId;
-import org.fourthline.cling.model.types.ServiceType;
 import org.fourthline.cling.model.types.UDADeviceType;
 import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.support.avtransport.impl.AVTransportService;
-import org.fourthline.cling.support.model.AVTransport;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Created by wonyoungjang on 13. 10. 16..

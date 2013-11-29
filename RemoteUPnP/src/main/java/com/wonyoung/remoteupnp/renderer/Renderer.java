@@ -1,6 +1,9 @@
-package com.wonyoung.remoteupnp;
+package com.wonyoung.remoteupnp.renderer;
 
 import android.util.Log;
+
+import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
+import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.controlpoint.SubscriptionCallback;

@@ -3,33 +3,14 @@ package com.wonyoung.remoteupnp.test;
 import android.content.ServiceConnection;
 import android.support.v4.app.FragmentActivity;
 
-import com.wonyoung.remoteupnp.DeviceSubscriber;
-import com.wonyoung.remoteupnp.OnMediaServerChangeListener;
-import com.wonyoung.remoteupnp.UPnPService;
+import com.wonyoung.remoteupnp.device.DeviceSubscriber;
+import com.wonyoung.remoteupnp.mediaserver.OnMediaServerChangeListener;
+import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
-import org.fourthline.cling.model.Namespace;
-import org.fourthline.cling.model.ValidationException;
-import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
-import org.fourthline.cling.model.meta.DeviceDetails;
-import org.fourthline.cling.model.meta.DeviceIdentity;
-import org.fourthline.cling.model.meta.Icon;
 import org.fourthline.cling.model.meta.LocalDevice;
-import org.fourthline.cling.model.meta.RemoteDevice;
-import org.fourthline.cling.model.meta.Service;
-import org.fourthline.cling.model.meta.StateVariable;
-import org.fourthline.cling.model.meta.UDAVersion;
-import org.fourthline.cling.model.resource.Resource;
-import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.ServiceId;
-import org.fourthline.cling.model.types.ServiceType;
-import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.registry.RegistryListener;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
