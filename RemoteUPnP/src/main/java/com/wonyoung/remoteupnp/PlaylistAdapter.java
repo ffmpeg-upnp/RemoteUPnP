@@ -6,7 +6,6 @@ import java.util.*;
 
 public class PlaylistAdapter extends BaseAdapter 
 {
-
 	private ArrayList<Item> list = new ArrayList<Item>();
 	public void add(Item item)
 	{

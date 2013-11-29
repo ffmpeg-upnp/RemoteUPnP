@@ -1,7 +1,5 @@
 package com.wonyoung.remoteupnp;
 
-import android.util.Log;
-
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -12,7 +10,6 @@ import org.fourthline.cling.support.contentdirectory.callback.Browse;
 import org.fourthline.cling.support.model.BrowseFlag;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
-import org.fourthline.cling.support.model.DescMeta;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.item.Item;
 
@@ -29,22 +26,20 @@ public class MediaServer {
     private List<Item> fileList;
     private List<Container> folderList;
 
-	private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
+    private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
     private Device device;
 
-	public void addAll()
-	{
-		PlaylistAdapter listAdapter = uPnPService.getPlaylistAdapter();
-		for (Item item : fileList) {
-			listAdapter.add(item);
-		}
-	}
+    public void addAll() {
+        PlaylistAdapter listAdapter = uPnPService.getPlaylistAdapter();
+        for (Item item : fileList) {
+            listAdapter.add(item);
+        }
+    }
 
-	public void setListener(FolderSubscriber subscriber)
-	{
-		this.subscriber = subscriber;
-		subscriber.updatedFolderList(list);
-	}
+    public void setListener(FolderSubscriber subscriber) {
+        this.subscriber = subscriber;
+        subscriber.updatedFolderList(list);
+    }
 
     public void browse(String folder) {
         if (device == null) return;
@@ -65,9 +60,6 @@ public class MediaServer {
 
                 for (Item item : fileList) {
                     list.add(item);
-                    if (item.getFirstResource() != null)
-                        Log.e("remoteUpnp", String.format("url : [%s] ", item.getFirstResource().getValue()));
-
                 }
 
                 subscriber.updatedFolderList(list);
@@ -88,8 +80,8 @@ public class MediaServer {
     }
 
     public void updateDevice(UPnPService uPnPService, Device device) {
-        this.uPnPService = uPnPService;        
+        this.uPnPService = uPnPService;
         this.device = device;
+        browse("0");
     }
-
 }

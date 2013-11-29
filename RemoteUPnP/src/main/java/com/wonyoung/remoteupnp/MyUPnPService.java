@@ -25,6 +25,7 @@ import com.wonyoung.remoteupnp.renderer.SimpleRendererStopped;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -38,7 +39,7 @@ interface SimpleRendererStateMachine extends AVTransportStateMachine {}
 /**
  * Created by wonyoungjang on 2013. 11. 18..
  */
-public class MyUPnPService implements UPnPService
+public class MyUPnPService extends Binder implements UPnPService
 {
 
 	private OnRendererChangeListener rendererChangeListener;
@@ -125,10 +126,6 @@ public class MyUPnPService implements UPnPService
     }
     
     @Override
-    public void bind(FragmentActivity context) {
-    }
-
-    @Override
     public ServiceConnection getServiceConnection() {
         return serviceConnection;
     }
@@ -187,7 +184,6 @@ public class MyUPnPService implements UPnPService
         }
     }
 
-    @Override
     public void unbind() {
         if (upnpService != null) {
             upnpService.getRegistry().removeListener(registryListener);

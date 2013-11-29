@@ -19,56 +19,32 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 public class MainActivity extends FragmentActivity implements
-ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
-{
-
-	public void OnRendererChanged(Device device)
-	{
-		renderer.updateDevice(uPnpService, device);
-		// TODO: Implement this method
-	}
-	
-
+        ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener {
     protected static final String TAG = MainActivity.class.getName();
-
-	private DeviceSubscriber subscriber;
-
-	private final Renderer renderer = new Renderer();
-
-	public Renderer getRenderer()
-	{
-		// TODO: Implement this method
-		return renderer;
-	}
-
-    public void OnMediaServerChanged(Device device) {
-        mSectionsPagerAdapter.librarySelectFragment.updateMediaServer(device);
-    }
-	
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+
+    private DeviceSubscriber subscriber;
+    private final Renderer renderer = new Renderer();
     protected UPnPService uPnpService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
-
         @Override
         public void onServiceDisconnected(ComponentName name) {
             uPnpService = null;
-
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "upnpcontrolservice onServiceConnected");
             uPnpService = (UPnPService) service;
-            
+
             if (subscriber != null)
                 addListener(subscriber);
-			renderer.updateDevice(uPnpService, uPnpService.getRendererDevice());
+            renderer.updateDevice(uPnpService, uPnpService.getRendererDevice());
             uPnpService.setOnMediaServerChangeListener(MainActivity.this);
-			uPnpService.setOnRendererChangeListener(MainActivity.this);
-
+            uPnpService.setOnRendererChangeListener(MainActivity.this);
         }
     };
 
@@ -83,6 +59,14 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
         context.startService(intent);
         context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (uPnpService != null) {
+            getApplicationContext().unbindService(serviceConnection);
+        }
+        super.onDestroy();
     }
 
     private void setUpActionBarAndViewPager() {
@@ -120,14 +104,6 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
     }
 
     @Override
-    protected void onDestroy() {
-        if (uPnpService != null) {
-            getApplicationContext().unbindService(serviceConnection);
-        }
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -136,7 +112,7 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
 
     @Override
     public void onTabSelected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
+                              FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
@@ -144,20 +120,15 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
+                                FragmentTransaction fragmentTransaction) {
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab,
-            FragmentTransaction fragmentTransaction) {
-    }
-
-    public UPnPService getUPnPService() {
-        return uPnpService;
+                                FragmentTransaction fragmentTransaction) {
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
         public PlayerFragment playerFragment;
         public LibrarySelectFragment librarySelectFragment;
         public DeviceSelectFragment deviceSelectFragment;
@@ -169,20 +140,20 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-            case 0:
-                deviceSelectFragment = new DeviceSelectFragment();
-                return deviceSelectFragment;
-            case 1:
-                librarySelectFragment = new LibrarySelectFragment();
-                if (uPnpService != null) {
-                    librarySelectFragment.updateMediaServer(uPnpService.getMediaDevice());
-                }
-                return librarySelectFragment;
-            case 2:
-                playerFragment = new PlayerFragment();
-                return playerFragment;
-            case 3:
-                return new PlaylistFragment();
+                case 0:
+                    deviceSelectFragment = new DeviceSelectFragment();
+                    return deviceSelectFragment;
+                case 1:
+                    librarySelectFragment = new LibrarySelectFragment();
+                    if (uPnpService != null) {
+                        librarySelectFragment.updateMediaServer(uPnpService.getMediaDevice());
+                    }
+                    return librarySelectFragment;
+                case 2:
+                    playerFragment = new PlayerFragment();
+                    return playerFragment;
+                case 3:
+                    return new PlaylistFragment();
             }
             return null;
         }
@@ -196,30 +167,35 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
             switch (position) {
-            case 0:
-                return getString(R.string.title_section1).toUpperCase(l);
-            case 1:
-                return getString(R.string.title_section2).toUpperCase(l);
-            case 2:
-                return getString(R.string.title_section3).toUpperCase(l);
-            case 3:
-                return getString(R.string.title_section4).toUpperCase(l);
+                case 0:
+                    return getString(R.string.title_section1).toUpperCase(l);
+                case 1:
+                    return getString(R.string.title_section2).toUpperCase(l);
+                case 2:
+                    return getString(R.string.title_section3).toUpperCase(l);
+                case 3:
+                    return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;
         }
+    }
+
+    public UPnPService getUPnPService() {
+        return uPnpService;
     }
 
     public void setUPnPService(UPnPService upnpService) {
         this.uPnpService = upnpService;
     }
 
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
     public void setRenderer(Device renderer) {
         if (uPnpService != null) {
             uPnpService.setRenderer(renderer);
         }
-    }
-
-    public void setMediaServer(Device mediaServer) {
     }
 
     public void setMediaDevice(Device device) {
@@ -229,17 +205,26 @@ ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener
     }
 
     public void addListener(DeviceSubscriber subscriber) {
-		this.subscriber = subscriber;
+        this.subscriber = subscriber;
         if (uPnpService != null) {
             uPnpService.addListener(subscriber);
         }
-        
     }
 
     public void removeListener(DeviceSubscriber subscriber) {
-		this.subscriber = subscriber;
+        this.subscriber = subscriber;
         if (uPnpService != null) {
             uPnpService.removeListener(subscriber);
         }
+    }
+
+    @Override
+    public void OnMediaServerChanged(Device device) {
+        mSectionsPagerAdapter.librarySelectFragment.updateMediaServer(device);
+    }
+
+    @Override
+    public void OnRendererChanged(Device device) {
+        renderer.updateDevice(uPnpService, device);
     }
 }

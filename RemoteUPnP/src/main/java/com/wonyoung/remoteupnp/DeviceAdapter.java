@@ -28,7 +28,7 @@ import android.widget.TextView;
 /**
  * Created by wonyoung.jang on 13. 11. 22.
  */
-public class DeviceAdapter extends BaseAdapter implements DeviceSubscriber {
+public class DeviceAdapter extends BaseAdapter {
     public final static ServiceType SERVICE_TYPE_RENDERER = new UDAServiceType("AVTransport");
     public final static ServiceType SERVICE_TYPE_MEDIA_SERVER = new UDAServiceType("ContentDirectory");
 // move to filter

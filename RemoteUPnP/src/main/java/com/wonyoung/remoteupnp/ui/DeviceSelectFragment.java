@@ -1,10 +1,8 @@
 package com.wonyoung.remoteupnp.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.NetworkInfo.DetailedState;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,21 +14,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.wonyoung.remoteupnp.DeviceAdapter;
+import com.wonyoung.remoteupnp.DeviceSubscriber;
 import com.wonyoung.remoteupnp.R;
-import com.wonyoung.remoteupnp.UPnPService;
 
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.DeviceDetails;
 import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.meta.Service;
-import com.wonyoung.remoteupnp.*;
 
 /**
  * Created by wonyoungjang on 13. 10. 17..
  */
-public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
-{
+public class DeviceSelectFragment extends Fragment implements DeviceSubscriber {
     private static final String TAG = DeviceSelectFragment.class.getName();
     private DeviceAdapter rendererAdapter;
     private DeviceAdapter mediaServerAdapter;
@@ -38,10 +34,9 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
     private AdapterView.OnItemClickListener mediaServerOnItemClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
-                long id) {
+                                long id) {
             final Device device = (Device) parent.getItemAtPosition(position);
-            final Context context = view.getContext();
-            // openDeviceDetailDialog(context, device);
+            // openDeviceDetailDialog(view.getContext(), device);
             MainActivity activity = (MainActivity) getActivity();
             activity.setMediaDevice(device);
         }
@@ -50,10 +45,9 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
     private AdapterView.OnItemClickListener rendererOnItemClick = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
-                long id) {
+                                long id) {
             final Device device = (Device) parent.getItemAtPosition(position);
-            final Context context = view.getContext();
-            // openDeviceDetailDialog(context, device);
+            // openDeviceDetailDialog(view.getContext(), device);
             MainActivity activity = (MainActivity) getActivity();
             activity.setRenderer(device);
         }
@@ -111,7 +105,7 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_device_select,
                 container, false);
@@ -122,19 +116,19 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-		
-		MainActivity activity = (MainActivity) getActivity();
+
+        MainActivity activity = (MainActivity) getActivity();
         rendererAdapter = new DeviceAdapter(activity,
-											DeviceAdapter.SERVICE_TYPE_RENDERER);
+                DeviceAdapter.SERVICE_TYPE_RENDERER);
         ListView rendererListView = (ListView) activity
-			.findViewById(R.id.renderer_list);
+                .findViewById(R.id.renderer_list);
         rendererListView.setAdapter(rendererAdapter);
         rendererListView.setOnItemClickListener(rendererOnItemClick);
 
         mediaServerAdapter = new DeviceAdapter(activity,
-											   DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
+                DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
         ListView mediaServerListView = (ListView) activity
-			.findViewById(R.id.media_server_list);
+                .findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerAdapter);
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
 
@@ -149,28 +143,25 @@ public class DeviceSelectFragment extends Fragment implements DeviceSubscriber
         super.onDestroyView();
     }
 
+    public void registerAdapter() {
+        Log.d(TAG, "registerAdapter");
+        MainActivity activity = (MainActivity) getActivity();
+        activity.addListener(this);
+    }
+
     private void unregisterAdapter() {
         Log.d(TAG, "unregisterAdapter");
         MainActivity activity = (MainActivity) getActivity();
         activity.removeListener(this);
     }
 
-    public void registerAdapter() {
-        Log.d(TAG, "registerAdapter");
-
-        MainActivity activity = (MainActivity) getActivity();
-        activity.addListener(this);
+    public void add(Device item) {
+        rendererAdapter.add(item);
+        mediaServerAdapter.add(item);
     }
 
-	public void add(Device item)
-	{
-		rendererAdapter.add(item);
-		mediaServerAdapter.add(item);
-	}
-
-	public void remove(Device item)
-	{
-		rendererAdapter.remove(item);
-		mediaServerAdapter.remove(item);
-	}
+    public void remove(Device item) {
+        rendererAdapter.remove(item);
+        mediaServerAdapter.remove(item);
+    }
 }
