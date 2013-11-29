@@ -49,14 +49,6 @@ public class MyUPnPService implements UPnPService
 		return playlistAdapter;
 	}
 	
-
-	private MediaServer mediaServer = new MediaServer(this);
-
-	public MediaServer getMediaServer()
-	{
-		return mediaServer;
-	}
-	
     private AndroidUpnpService upnpService;
 
     private BrowseRegistryListener registryListener = new BrowseRegistryListener();
@@ -148,7 +140,7 @@ public class MyUPnPService implements UPnPService
     }
 
     @Override
-    public void setMediaServer(Device device) {
+    public void setMediaDevice(Device device) {
 		if (mediaServerDevice != device) {
 			applyMediaServer(device);
 		}
@@ -244,6 +236,11 @@ public class MyUPnPService implements UPnPService
                 listener.remove(device);
             }
         }
+    }
+
+    @Override
+    public void removeListener(DeviceSubscriber listener) {
+        listeners.remove(listener);
     }
 
 }

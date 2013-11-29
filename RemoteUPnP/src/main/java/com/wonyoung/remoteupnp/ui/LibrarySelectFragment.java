@@ -31,7 +31,7 @@ import android.widget.*;
  */
 public class LibrarySelectFragment extends Fragment {
     private UPnPService uPnPService;
-    public MediaServer mediaServer;
+    public MediaServer mediaServer = new MediaServer();
     private FolderViewAdapter adapter;
 
 
@@ -95,7 +95,7 @@ public class LibrarySelectFragment extends Fragment {
             }
         });
         
-
+        mediaServer.setListener(adapter);
 		
 		Button addAll = (Button) activity.findViewById(R.id.addAll);
 		addAll.setOnClickListener(new View.OnClickListener() {
@@ -112,10 +112,10 @@ public class LibrarySelectFragment extends Fragment {
         mediaServer.browse("0");
     }
 
-    public void updateMediaServer() {
+    public void updateMediaServer(Device device) {
 		final MainActivity activity = (MainActivity) getActivity();
-		mediaServer = activity.getMediaServer();
-		mediaServer.setListener(adapter);
+        this.uPnPService = activity.getUPnPService();
+		mediaServer.updateDevice(uPnPService, device);
         browseRoot();
     }
 }

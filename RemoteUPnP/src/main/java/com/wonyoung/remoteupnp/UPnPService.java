@@ -15,17 +15,12 @@ public interface UPnPService
 
 	public PlaylistAdapter getPlaylistAdapter();
 
-
-	public MediaServer getMediaServer();
-
-
-    void setMediaServer(Device device);
-
     void setRenderer(Device device);
 
     void execute(ActionCallback action);
 
     void addListener(DeviceSubscriber listener);
+    public void removeListener(DeviceSubscriber listener);
 
     void unbind();
 
@@ -41,4 +36,7 @@ public interface UPnPService
 
 
     void execute(SubscriptionCallback callback);
+
+    public void setMediaDevice(Device device);
+
 }

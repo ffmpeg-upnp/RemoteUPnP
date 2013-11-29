@@ -1,11 +1,13 @@
 package com.wonyoung.remoteupnp.ui;
 
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.NetworkInfo.DetailedState;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,27 +29,31 @@ import org.fourthline.cling.model.meta.Service;
  * Created by wonyoungjang on 13. 10. 17..
  */
 public class DeviceSelectFragment extends Fragment {
+    private static final String TAG = DeviceSelectFragment.class.getName();
     private DeviceAdapter rendererAdapter;
     private DeviceAdapter mediaServerAdapter;
-    private UPnPService service;
 
     private AdapterView.OnItemClickListener mediaServerOnItemClick = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                long id) {
             final Device device = (Device) parent.getItemAtPosition(position);
             final Context context = view.getContext();
-            openDeviceDetailDialog(context, device);
-            service.setMediaServer(device);
+            // openDeviceDetailDialog(context, device);
+            MainActivity activity = (MainActivity) getActivity();
+            activity.setMediaDevice(device);
         }
     };
 
     private AdapterView.OnItemClickListener rendererOnItemClick = new AdapterView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                long id) {
             final Device device = (Device) parent.getItemAtPosition(position);
             final Context context = view.getContext();
-            openDeviceDetailDialog(context, device);
-            service.setRenderer(device);
+            // openDeviceDetailDialog(context, device);
+            MainActivity activity = (MainActivity) getActivity();
+            activity.setRenderer(device);
         }
     };
 
@@ -56,17 +62,15 @@ public class DeviceSelectFragment extends Fragment {
         dialog.setTitle(device.toString());
 
         dialog.setMessage(getDetailsMessage(device));
-        dialog.setButton(
-                "Close",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        MainActivity activity = (MainActivity) getActivity();
-//                            onMediaServerSelected(device);
-                    }
-                }
-        );
+        dialog.setButton("Close", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                MainActivity activity = (MainActivity) getActivity();
+                // onMediaServerSelected(device);
+            }
+        });
         dialog.show();
-        TextView textView = (TextView) dialog.findViewById(android.R.id.message);
+        TextView textView = (TextView) dialog
+                .findViewById(android.R.id.message);
         textView.setTextSize(12);
     }
 
@@ -81,7 +85,8 @@ public class DeviceSelectFragment extends Fragment {
 
         ModelDetails modelDetails = detail.getModelDetails();
         sb.append("\n");
-        sb.append("ModelDescription : " + modelDetails.getModelDescription() + "\n");
+        sb.append("ModelDescription : " + modelDetails.getModelDescription()
+                + "\n");
         sb.append("ModelName : " + modelDetails.getModelName() + "\n");
         sb.append("ModelNumber : " + modelDetails.getModelNumber() + "\n");
         sb.append("ModelURI : " + modelDetails.getModelURI() + "\n");
@@ -103,29 +108,89 @@ public class DeviceSelectFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_device_select, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
+        View rootView = inflater.inflate(R.layout.fragment_device_select,
+                container, false);
 
         return rootView;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
         MainActivity activity = (MainActivity) getActivity();
-        this.service = activity.getUPnPService();
-
-        rendererAdapter = new DeviceAdapter(activity, DeviceAdapter.SERVICE_TYPE_RENDERER);
-        ListView rendererListView = (ListView) getActivity().findViewById(R.id.renderer_list);
+        rendererAdapter = new DeviceAdapter(activity,
+                DeviceAdapter.SERVICE_TYPE_RENDERER);
+        ListView rendererListView = (ListView) activity
+                .findViewById(R.id.renderer_list);
         rendererListView.setAdapter(rendererAdapter);
         rendererListView.setOnItemClickListener(rendererOnItemClick);
-        service.addListener(rendererAdapter);
 
-        mediaServerAdapter = new DeviceAdapter(activity, DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
-        ListView mediaServerListView = (ListView) getActivity().findViewById(R.id.media_server_list);
+        mediaServerAdapter = new DeviceAdapter(activity,
+                DeviceAdapter.SERVICE_TYPE_MEDIA_SERVER);
+        ListView mediaServerListView = (ListView) activity
+                .findViewById(R.id.media_server_list);
         mediaServerListView.setAdapter(mediaServerAdapter);
         mediaServerListView.setOnItemClickListener(mediaServerOnItemClick);
-        service.addListener(mediaServerAdapter);
+
+        registerAdapter();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop");
+        super.onStop();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Log.d(TAG, "onActivityCreated");
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        Log.d(TAG, "onAttach");
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d(TAG, "onDestroyView");
+        unregisterAdapter();
+
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach");
+
+        super.onDetach();
+    }
+
+    private void unregisterAdapter() {
+        Log.d(TAG, "unregisterAdapter");
+        MainActivity activity = (MainActivity) getActivity();
+        activity.removeListener(rendererAdapter);
+        activity.removeListener(mediaServerAdapter);
+    }
+
+    public void registerAdapter() {
+        Log.d(TAG, "registerAdapter");
+
+        MainActivity activity = (MainActivity) getActivity();
+        activity.addListener(rendererAdapter);
+        activity.addListener(mediaServerAdapter);
     }
 }

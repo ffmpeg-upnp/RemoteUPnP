@@ -30,10 +30,7 @@ public class MediaServer {
     private List<Container> folderList;
 
 	private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
-	
-    public MediaServer(UPnPService uPnPService) {
-        this.uPnPService = uPnPService;
-    }
+    private Device device;
 
 	public void addAll()
 	{
@@ -50,7 +47,6 @@ public class MediaServer {
 	}
 
     public void browse(String folder) {
-        Device device = uPnPService.getMediaDevice();
         if (device == null) return;
 
         Service service = device.findService(new UDAServiceId("ContentDirectory"));
@@ -89,6 +85,11 @@ public class MediaServer {
         };
 
         uPnPService.execute(browseAction);
+    }
+
+    public void updateDevice(UPnPService uPnPService, Device device) {
+        this.uPnPService = uPnPService;        
+        this.device = device;
     }
 
 }
