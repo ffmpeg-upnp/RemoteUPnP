@@ -12,18 +12,21 @@ import android.widget.Toast;
 
 import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
 import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.playlist.PlaylistListener;
 import com.wonyoung.remoteupnp.renderer.Renderer;
 import com.wonyoung.remoteupnp.service.UPnPService;
 
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
+import org.fourthline.cling.support.model.item.Item;
+
+import java.util.List;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class PlaylistFragment extends Fragment {
+public class PlaylistFragment extends Fragment implements PlaylistListener {
     private PlaylistAdapter adapter;
-    private Renderer renderer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,10 +40,9 @@ public class PlaylistFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final MainActivity activity = (MainActivity) getActivity();
-        UPnPService uPnPService = activity.getUPnPService();
-        this.renderer = activity.getRenderer();
+//        UPnPService uPnPService = activity.getUPnPService();
 
-        adapter = uPnPService.getPlaylistAdapter();
+        adapter = new PlaylistAdapter(activity);//uPnPService.getPlaylistAdapter();
         ListView listView = (ListView) activity.findViewById(R.id.playlistView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -50,20 +52,26 @@ public class PlaylistFragment extends Fragment {
 
                 Res resource = item.getFirstResource();
                 if (resource != null) {
-                    renderer.play(resource.getValue());
+                    activity.play(resource.getValue());
                 }
                 Toast.makeText(activity.getApplicationContext(), "" + resource.getDuration(),
                         Toast.LENGTH_SHORT).show();
             }
         });
 
+        activity.setPlaylistListener(this);
         Button playAll = (Button) activity.findViewById(R.id.playAll);
         playAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View p1) {
-                renderer.playFrom(0);
+                activity.playFrom(0);
             }
         });
+    }
+
+    @Override
+    public void addAll(List<Item> items) {
+        adapter.addAll(items);
     }
 }
 

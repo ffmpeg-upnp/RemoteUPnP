@@ -10,8 +10,9 @@ import android.view.*;
 
 import com.wonyoung.remoteupnp.*;
 import com.wonyoung.remoteupnp.device.DeviceSubscriber;
-import com.wonyoung.remoteupnp.mediaserver.OnMediaServerChangeListener;
-import com.wonyoung.remoteupnp.renderer.OnRendererChangeListener;
+import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
+import com.wonyoung.remoteupnp.mediaserver.MediaServer;
+import com.wonyoung.remoteupnp.playlist.PlaylistListener;
 import com.wonyoung.remoteupnp.renderer.Renderer;
 import com.wonyoung.remoteupnp.service.UPnPControlService;
 import com.wonyoung.remoteupnp.service.UPnPService;
@@ -24,15 +25,15 @@ import android.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-public class MainActivity extends FragmentActivity implements
-        ActionBar.TabListener, OnMediaServerChangeListener, OnRendererChangeListener {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
     protected static final String TAG = MainActivity.class.getName();
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
 
-    private DeviceSubscriber subscriber;
-    private final Renderer renderer = new Renderer();
+    private DeviceSubscriber deviceSubscriber;
+    private FolderSubscriber folderSubscriber;
+    private PlaylistListener playlistListener;
     protected UPnPService uPnpService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -46,11 +47,12 @@ public class MainActivity extends FragmentActivity implements
             Log.d(TAG, "upnpcontrolservice onServiceConnected");
             uPnpService = (UPnPService) service;
 
-            if (subscriber != null)
-                addListener(subscriber);
-            renderer.updateDevice(uPnpService, uPnpService.getRendererDevice());
-            uPnpService.setOnMediaServerChangeListener(MainActivity.this);
-            uPnpService.setOnRendererChangeListener(MainActivity.this);
+            if (deviceSubscriber != null)
+                addListener(deviceSubscriber);
+            if (folderSubscriber != null)
+                setMediaServerListener(folderSubscriber);
+            if (playlistListener != null)
+                setPlaylistListener(playlistListener);
         }
     };
 
@@ -134,8 +136,31 @@ public class MainActivity extends FragmentActivity implements
                                 FragmentTransaction fragmentTransaction) {
     }
 
+    public void browse(String folder) {
+
+        MediaServer mediaServer = uPnpService.getMediaServer();
+        mediaServer.browse(folder);
+    }
+
+    public void addAll() {
+        MediaServer mediaServer = uPnpService.getMediaServer();
+        mediaServer.addAll();
+    }
+
+    public void play(String url) {
+        Renderer renderer = uPnpService.getRenderer();
+        renderer.play(url);
+    }
+
+    public void playFrom(int index) {
+        Renderer renderer = uPnpService.getRenderer();
+        renderer.playFrom(index);
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
         public PlayerFragment playerFragment;
+
         public LibrarySelectFragment librarySelectFragment;
         public DeviceSelectFragment deviceSelectFragment;
 
@@ -151,9 +176,6 @@ public class MainActivity extends FragmentActivity implements
                     return deviceSelectFragment;
                 case 1:
                     librarySelectFragment = new LibrarySelectFragment();
-                    if (uPnpService != null) {
-                        librarySelectFragment.updateMediaServer(uPnpService.getMediaDevice());
-                    }
                     return librarySelectFragment;
                 case 2:
                     playerFragment = new PlayerFragment();
@@ -184,6 +206,7 @@ public class MainActivity extends FragmentActivity implements
             }
             return null;
         }
+
     }
 
     public UPnPService getUPnPService() {
@@ -195,12 +218,12 @@ public class MainActivity extends FragmentActivity implements
     }
 
     public Renderer getRenderer() {
-        return renderer;
+        return uPnpService.getRenderer();
     }
 
     public void setRenderer(Device renderer) {
         if (uPnpService != null) {
-            uPnpService.setRenderer(renderer);
+            uPnpService.setRendererDevice(renderer);
         }
     }
 
@@ -211,26 +234,31 @@ public class MainActivity extends FragmentActivity implements
     }
 
     public void addListener(DeviceSubscriber subscriber) {
-        this.subscriber = subscriber;
+        this.deviceSubscriber = subscriber;
         if (uPnpService != null) {
             uPnpService.addListener(subscriber);
         }
     }
 
     public void removeListener(DeviceSubscriber subscriber) {
-        this.subscriber = subscriber;
+        this.deviceSubscriber = subscriber;
         if (uPnpService != null) {
             uPnpService.removeListener(subscriber);
         }
     }
 
-    @Override
-    public void OnMediaServerChanged(Device device) {
-        mSectionsPagerAdapter.librarySelectFragment.updateMediaServer(device);
+    public void setMediaServerListener(FolderSubscriber subscriber) {
+        this.folderSubscriber = subscriber;
+        if (uPnpService != null) {
+            uPnpService.setMediaServerListener(subscriber);
+        }
     }
 
-    @Override
-    public void OnRendererChanged(Device device) {
-        renderer.updateDevice(uPnpService, device);
+    public void setPlaylistListener(PlaylistListener listener) {
+        this.playlistListener = listener;
+        if (uPnpService != null) {
+            uPnpService.setPlaylistListener(listener);
+        }
+
     }
 }

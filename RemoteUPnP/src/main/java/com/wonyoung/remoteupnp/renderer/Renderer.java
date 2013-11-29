@@ -2,6 +2,7 @@ package com.wonyoung.remoteupnp.renderer;
 
 import android.util.Log;
 
+import com.wonyoung.remoteupnp.playlist.Playlist;
 import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
 import com.wonyoung.remoteupnp.service.UPnPService;
 
@@ -31,9 +32,14 @@ import java.util.Map;
 public class Renderer {
     private UPnPService uPnPService;
     private Device device;
+    private Playlist playlist;
+
+    public Renderer(Playlist playlist) {
+
+        this.playlist = playlist;
+    }
 
     public void play(String url) {
-        Device device = uPnPService.getRendererDevice();
         Service service = device.findService(new UDAServiceId("AVTransport"));
 
         if (service != null) {
@@ -60,19 +66,17 @@ public class Renderer {
         }
     }
 
-    public void playFrom(int p0) {
-        PlaylistAdapter adapter = uPnPService.getPlaylistAdapter();
+    public void playFrom(int index) {
 
-        if (p0 >= adapter.getCount()) {
+        if (index >= playlist.size()) {
             return;
         }
-        Item item = (Item) adapter.getItem(p0);
+        Item item = (Item) playlist.get(index);
         String url = item.getFirstResource().getValue();
-        playNext(url, p0 + 1);
+        playNext(url, index + 1);
     }
 
     private void playNext(String url, final int p0) {
-        Device device = uPnPService.getRendererDevice();
         Service service = device.findService(new UDAServiceId("AVTransport"));
 
         if (service != null) {

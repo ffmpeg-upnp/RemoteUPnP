@@ -1,5 +1,6 @@
 package com.wonyoung.remoteupnp.mediaserver;
 
+import com.wonyoung.remoteupnp.playlist.Playlist;
 import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
 import com.wonyoung.remoteupnp.service.UPnPService;
 
@@ -31,12 +32,14 @@ public class MediaServer {
 
     private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
     private Device device;
+    private Playlist playlist;
+
+    public MediaServer(Playlist playlist) {
+        this.playlist = playlist;
+    }
 
     public void addAll() {
-        PlaylistAdapter listAdapter = uPnPService.getPlaylistAdapter();
-        for (Item item : fileList) {
-            listAdapter.add(item);
-        }
+        playlist.add(fileList);
     }
 
     public void setListener(FolderSubscriber subscriber) {
@@ -84,7 +87,9 @@ public class MediaServer {
 
     public void updateDevice(UPnPService uPnPService, Device device) {
         this.uPnPService = uPnPService;
-        this.device = device;
-        browse("0");
+        if (this.device != device) {
+            this.device = device;
+            browse("0");
+        }
     }
 }

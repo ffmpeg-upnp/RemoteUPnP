@@ -2,10 +2,11 @@ package com.wonyoung.remoteupnp.service;
 
 import android.content.ServiceConnection;
 
-import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
+import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
+import com.wonyoung.remoteupnp.mediaserver.MediaServer;
 import com.wonyoung.remoteupnp.device.DeviceSubscriber;
-import com.wonyoung.remoteupnp.mediaserver.OnMediaServerChangeListener;
-import com.wonyoung.remoteupnp.renderer.OnRendererChangeListener;
+import com.wonyoung.remoteupnp.playlist.PlaylistListener;
+import com.wonyoung.remoteupnp.renderer.Renderer;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.controlpoint.SubscriptionCallback;
@@ -24,12 +25,14 @@ public interface UPnPService
     void execute(SubscriptionCallback callback);
     void execute(ActionCallback action);
 
+    void setMediaServerListener(FolderSubscriber subscriber);
     void setMediaDevice(Device device);
-    void setRenderer(Device device);
-    Device getMediaDevice();
-    Device getRendererDevice();
-    void setOnMediaServerChangeListener(OnMediaServerChangeListener listener);
-    void setOnRendererChangeListener(OnRendererChangeListener listner);
+    MediaServer getMediaServer();
 
-	PlaylistAdapter getPlaylistAdapter();
+    void setRendererDevice(Device device);
+    Renderer getRenderer();
+
+
+    void setPlaylistListener(PlaylistListener listener);
+
 }

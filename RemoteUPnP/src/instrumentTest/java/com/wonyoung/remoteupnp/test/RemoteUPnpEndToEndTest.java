@@ -58,7 +58,7 @@ public class RemoteUPnpEndToEndTest extends ActivityInstrumentationTestCase2<Mai
 //
 //        deviceSelector.setMediaServer(one);
 //        mediaSelector.mediaServerWith(one);
-//        deviceSelector.setRenderer(second);
+//        deviceSelector.setRendererDevice(second);
 //        player.showsRendererWith(second);
 //
 //

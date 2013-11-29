@@ -42,7 +42,7 @@ public class FakeUPnPService implements UPnPService {
     }
 
     @Override
-    public void setRenderer(Device device) {
+    public void setRendererDevice(Device device) {
 
     }
 

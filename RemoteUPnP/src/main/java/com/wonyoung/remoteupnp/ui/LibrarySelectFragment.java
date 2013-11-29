@@ -9,22 +9,20 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.wonyoung.remoteupnp.mediaserver.FolderViewAdapter;
-import com.wonyoung.remoteupnp.mediaserver.MediaServer;
 import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
+import com.wonyoung.remoteupnp.mediaserver.FolderViewAdapter;
 import com.wonyoung.remoteupnp.renderer.Renderer;
-import com.wonyoung.remoteupnp.service.UPnPService;
 
-import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.Res;
+
+import java.util.ArrayList;
 
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends Fragment {
-    private MediaServer mediaServer = new MediaServer();
-    private Renderer renderer;
+public class LibrarySelectFragment extends Fragment implements FolderSubscriber {
     private FolderViewAdapter adapter;
 
     @Override
@@ -39,7 +37,6 @@ public class LibrarySelectFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final MainActivity activity = (MainActivity) getActivity();
-        this.renderer = activity.getRenderer();
 
         adapter = new FolderViewAdapter(activity);
         ListView listView = (ListView) activity.findViewById(R.id.listView);
@@ -48,29 +45,28 @@ public class LibrarySelectFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DIDLObject item = (DIDLObject) adapter.getItem(position);
-                mediaServer.browse(item.getId());
+                activity.browse(item.getId());
 
                 Res resource = item.getFirstResource();
                 if (resource != null) {
-                    renderer.play(resource.getValue());
+                    activity.play(resource.getValue());
                 }
             }
         });
 
-        mediaServer.setListener(adapter);
+        activity.setMediaServerListener(this);
 
         Button addAll = (Button) activity.findViewById(R.id.addAll);
         addAll.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View p1) {
-                mediaServer.addAll();
+                activity.addAll();
             }
         });
     }
 
-    public void updateMediaServer(Device device) {
-        final MainActivity activity = (MainActivity) getActivity();
-        UPnPService uPnPService = activity.getUPnPService();
-        mediaServer.updateDevice(uPnPService, device);
+    @Override
+    public void updatedFolderList(ArrayList<DIDLObject> updated) {
+        adapter.updatedFolderList(updated);
     }
 }

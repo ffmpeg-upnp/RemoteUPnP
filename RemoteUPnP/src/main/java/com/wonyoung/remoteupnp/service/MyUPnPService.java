@@ -19,13 +19,15 @@ import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
 import org.fourthline.cling.support.lastchange.LastChangeParser;
 import org.seamless.statemachine.States;
 
-import com.wonyoung.remoteupnp.playlist.PlaylistAdapter;
+import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
+import com.wonyoung.remoteupnp.mediaserver.MediaServer;
+import com.wonyoung.remoteupnp.playlist.Playlist;
 import com.wonyoung.remoteupnp.device.DeviceSubscriber;
 import com.wonyoung.remoteupnp.localrenderer.SimpleRendererNoMediaPresent;
 import com.wonyoung.remoteupnp.localrenderer.SimpleRendererPlaying;
 import com.wonyoung.remoteupnp.localrenderer.SimpleRendererStopped;
-import com.wonyoung.remoteupnp.mediaserver.OnMediaServerChangeListener;
-import com.wonyoung.remoteupnp.renderer.OnRendererChangeListener;
+import com.wonyoung.remoteupnp.playlist.PlaylistListener;
+import com.wonyoung.remoteupnp.renderer.Renderer;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
@@ -34,53 +36,38 @@ import android.os.IBinder;
 import android.util.Log;
 
 @States({
-    SimpleRendererNoMediaPresent.class,
-    SimpleRendererStopped.class,
-    SimpleRendererPlaying.class
+        SimpleRendererNoMediaPresent.class,
+        SimpleRendererStopped.class,
+        SimpleRendererPlaying.class
 })
-interface SimpleRendererStateMachine extends AVTransportStateMachine {}
+interface SimpleRendererStateMachine extends AVTransportStateMachine {
+}
+
 /**
  * Created by wonyoungjang on 2013. 11. 18..
  */
-public class MyUPnPService extends Binder implements UPnPService
-{
+public class MyUPnPService extends Binder implements UPnPService {
 
-	private OnRendererChangeListener rendererChangeListener;
+    private Playlist playlist = new Playlist();
 
-	public void setOnRendererChangeListener(OnRendererChangeListener listener)
-	{
-		rendererChangeListener = listener;
-		// TODO: Implement this method
-	}
+    private MediaServer mediaServer = new MediaServer(playlist);
 
+    private final Renderer renderer = new Renderer(playlist);
 
-	private PlaylistAdapter playlistAdapter
-	 = new PlaylistAdapter();
-
-	public PlaylistAdapter getPlaylistAdapter()
-	{
-		return playlistAdapter;
-	}
-	
-    private AndroidUpnpService upnpService;
-
-    private BrowseRegistryListener registryListener = new BrowseRegistryListener();
     private ArrayList<Device> devices = new ArrayList<Device>();
+    private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
 
-    private Device mediaServerDevice;
-    private Device renderer;
-
-    
-    
+    private AndroidUpnpService upnpService;
+    private BrowseRegistryListener registryListener = new BrowseRegistryListener();
     private boolean bounded = false;
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("bind", "Bounded connection - " + this );
+            Log.d("bind", "Bounded connection - " + this);
             upnpService = (AndroidUpnpService) service;
 
             addLocalRenderer();
-            
+
             // Clear the list
             devices.clear();
 
@@ -97,15 +84,12 @@ public class MyUPnPService extends Binder implements UPnPService
             bounded = true;
         }
 
-
         @Override
         public void onServiceDisconnected(ComponentName className) {
             upnpService = null;
             bounded = false;
         }
     };
-    private ArrayList<DeviceSubscriber> listeners = new ArrayList<DeviceSubscriber>();
-    private OnMediaServerChangeListener mediaServerChangeListener;
 
     private void addLocalRenderer() {
         LocalService<AVTransportService> service =
@@ -127,46 +111,25 @@ public class MyUPnPService extends Binder implements UPnPService
                 }
         );
     }
-    
+
     @Override
     public ServiceConnection getServiceConnection() {
         return serviceConnection;
     }
 
     @Override
-    public Device getMediaDevice() {
-        return mediaServerDevice;
-    }
-
-    @Override
-    public Device getRendererDevice() {
-        return renderer;
-    }
-
-    @Override
-    public void setOnMediaServerChangeListener(OnMediaServerChangeListener listener) {
-        mediaServerChangeListener = listener;
-    }
-
-    @Override
     public void setMediaDevice(Device device) {
-		if (mediaServerDevice != device) {
-			applyMediaServer(device);
-		}
+        mediaServer.updateDevice(this, device);
     }
 
-	private void applyMediaServer(Device device)
-	{
-		mediaServerDevice = device;
-		if (mediaServerChangeListener != null) {
-			mediaServerChangeListener.OnMediaServerChanged(device);
-		}
-	}
+    @Override
+    public void setRendererDevice(Device device) {
+        renderer.updateDevice(this, device);
+    }
 
     @Override
-    public void setRenderer(Device device) {
-		rendererChangeListener.OnRendererChanged(device);
-        renderer = device;
+    public Renderer getRenderer() {
+        return renderer;
     }
 
     @Override
@@ -178,7 +141,7 @@ public class MyUPnPService extends Binder implements UPnPService
     public void execute(SubscriptionCallback callback) {
         upnpService.getControlPoint().execute(callback);
     }
-    
+
     @Override
     public void addListener(DeviceSubscriber listener) {
         listeners.add(listener);
@@ -192,7 +155,7 @@ public class MyUPnPService extends Binder implements UPnPService
             upnpService.getRegistry().removeListener(registryListener);
         }
         if (bounded) {
-            Log.d("bind", "try to unbound - " + serviceConnection );
+            Log.d("bind", "try to unbound - " + serviceConnection);
             bounded = false;
         }
     }
@@ -245,11 +208,27 @@ public class MyUPnPService extends Binder implements UPnPService
                 listener.remove(device);
             }
         }
+
     }
 
     @Override
     public void removeListener(DeviceSubscriber listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void setMediaServerListener(FolderSubscriber subscriber) {
+        mediaServer.setListener(subscriber);
+    }
+
+    @Override
+    public MediaServer getMediaServer() {
+        return mediaServer;
+    }
+
+    @Override
+    public void setPlaylistListener(PlaylistListener listener) {
+        playlist.setListener(listener);
     }
 
 }
