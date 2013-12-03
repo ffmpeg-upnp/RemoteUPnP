@@ -21,6 +21,10 @@ import android.widget.TextView;
 
 import com.wonyoung.remoteupnp.R;
 import com.wonyoung.remoteupnp.mediaserver.FolderSubscriber;
+import android.widget.*;
+import java.net.*;
+import java.io.*;
+import java.util.*;
 
 /**
  * Created by wonyoungjang on 2013. 11. 23..
@@ -79,19 +83,22 @@ public class FolderViewAdapter extends BaseAdapter {
             Log.d("res", "value: " + res.getValue());
             Log.d("res", "resolution: " + res.getResolution());
             Log.d("res", "uri: " + res.getImportUri());
+	
+			
         }
-
-//        holder.icon.setImageBitmap(null);
+		
         holder.title.setText(item.getTitle());
 		Res res = item.getFirstResource();
 		String albumArtUrl = null;
 		if (res != null) {
 			holder.duration.setText(res.getDuration());
             holder.info.setText(res.getProtocolInfo().getNetwork());
-            albumArtUrl = res.getValue();
 		}
-		new AlbumArtLoadTask(holder.icon).execute(albumArtUrl);
-
+		URI uri = item.getFirstPropertyValue(DIDLObject.Property.UPNP.ALBUM_ART_URI.class);
+		if (uri != null)
+			albumArtUrl = uri.toString();
+		
+			new AlbumArtLoadTask(holder.icon).execute(albumArtUrl);			
         return convertView;
     }
 
@@ -127,10 +134,22 @@ public class FolderViewAdapter extends BaseAdapter {
 
         @Override
         protected Bitmap doInBackground(String... params) {
+			Bitmap bm;
+			
             String url = params[0];
             if (url == null) {
-                return BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_menu_more);
+                bm = BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_menu_more);
             }
+			else {
+            try {
+                InputStream in = new URL(url).openStream();
+                bm = BitmapFactory.decodeStream(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+				bm = BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_media_play);
+            }
+			}
+			return bm;
 //            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 //            retriever.setDataSource(url, new HashMap<String, String>());
 
@@ -139,7 +158,7 @@ public class FolderViewAdapter extends BaseAdapter {
 //                return BitmapFactory.decodeByteArray(art, 0, art.length);
 //            } catch (Exception e) {
 //            }
-            return BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_media_play);
+   //         return BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_media_play);
         }
 
         @Override
