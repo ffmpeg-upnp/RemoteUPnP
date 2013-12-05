@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,10 +34,20 @@ public class FolderViewAdapter extends BaseAdapter {
 
     private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
     private Activity activity;
+    private LruCache<String, Bitmap> mMemoryCache;
 
     public FolderViewAdapter(Activity activity) {
         this.activity = activity;
+        final int maxMemroy = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemroy / 8;
+        this.mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
+
 
     @Override
     public int getCount() {
@@ -96,10 +107,24 @@ public class FolderViewAdapter extends BaseAdapter {
 		}
 		URI uri = item.getFirstPropertyValue(DIDLObject.Property.UPNP.ALBUM_ART_URI.class);
 		if (uri != null)
-			albumArtUrl = uri.toString();
-		
-			new AlbumArtLoadTask(holder.icon).execute(albumArtUrl);			
+            albumArtUrl = uri.toString();
+
+        if (albumArtUrl != null) {
+            Bitmap bitmap = getBitmapFromMemCache(albumArtUrl);
+
+            if (bitmap != null) {
+                holder.icon.setImageBitmap(bitmap);
+            } else {
+//            holder.icon.setImageResource(R.drawable.i);
+                new AlbumArtLoadTask(holder.icon).execute(albumArtUrl);
+            }
+
+        }
         return convertView;
+    }
+
+    private Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
     }
 
     public void updatedFolderList(ArrayList<DIDLObject> updated) {
@@ -149,6 +174,7 @@ public class FolderViewAdapter extends BaseAdapter {
 				bm = BitmapFactory.decodeResource(activity.getResources(), android.R.drawable.ic_media_play);
             }
 			}
+            addBitmapToMemoryCache(url, bm);
 			return bm;
 //            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 //            retriever.setDataSource(url, new HashMap<String, String>());
@@ -165,6 +191,12 @@ public class FolderViewAdapter extends BaseAdapter {
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null)
             imageView.setImageBitmap(bitmap);
+        }
+    }
+
+    private void addBitmapToMemoryCache(String url, Bitmap bm) {
+        if (mMemoryCache.get(url) == null) {
+            mMemoryCache.put(url, bm);
         }
     }
 }
