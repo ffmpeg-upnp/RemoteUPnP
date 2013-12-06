@@ -1,10 +1,17 @@
 package com.wonyoung.remoteupnp.service;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.wonyoung.remoteupnp.R;
+import com.wonyoung.remoteupnp.ui.MainActivity;
 
 public class UPnPControlService extends Service
 {
@@ -22,10 +29,31 @@ public class UPnPControlService extends Service
             Context.BIND_AUTO_CREATE
         );
 
+        addNotification();
+
 	    return START_STICKY;
 	}
-	
-	@Override
+
+    private void addNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.notification_icon)
+                .setContentTitle("My notification")
+                .setContentText("Hello World!");
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        int mId = 1;
+        mNotificationManager.notify(mId, mBuilder.build());
+    }
+
+    @Override
 	public IBinder onBind(Intent intent)
 	{
 	    Log.d(TAG, "onBind");
