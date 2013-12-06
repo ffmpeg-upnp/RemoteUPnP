@@ -78,18 +78,18 @@ public class DeviceAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Device device = devices.get(position);
-        URL url = ((RemoteDevice) device).getIdentity().getDescriptorURL();
-        Log.d("meta", "device: " + device.getDisplayString());
-        Log.d("meta", "tostring: " + device.toString());
-        Log.d("meta", "uri: " + ((RemoteDevice)device).getIdentity().getDescriptorURL().getAuthority());
-        for (Icon icon : device.findIcons()) {
-            Log.d("meta", "icon uri: " + icon.getUri().toString());
-        }
-        if (device.hasIcons()) {
-            Icon icon = peakIcon(device.getIcons());
-            String iconUrl = url.getProtocol() + "://" + url.getAuthority() + icon.getUri();
-            new DownloadImageTask(holder.icon).execute(iconUrl);
-        }
+//        URL url = ((RemoteDevice) device).getIdentity().getDescriptorURL();
+//        Log.d("meta", "device: " + device.getDisplayString());
+//        Log.d("meta", "tostring: " + device.toString());
+//        Log.d("meta", "uri: " + ((RemoteDevice)device).getIdentity().getDescriptorURL().getAuthority());
+//        for (Icon icon : device.findIcons()) {
+//            Log.d("meta", "icon uri: " + icon.getUri().toString());
+//        }
+//        if (device.hasIcons()) {
+//            Icon icon = peakIcon(device.getIcons());
+//            String iconUrl = url.getProtocol() + "://" + url.getAuthority() + icon.getUri();
+//            new DownloadImageTask(holder.icon).execute(iconUrl);
+//        }
         holder.title.setText(device.getDisplayString());
         return convertView;
     }

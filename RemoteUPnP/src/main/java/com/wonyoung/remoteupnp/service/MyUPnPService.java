@@ -1,20 +1,32 @@
 package com.wonyoung.remoteupnp.service;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.controlpoint.SubscriptionCallback;
+import org.fourthline.cling.model.DefaultServiceManager;
+import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.DeviceDetails;
+import org.fourthline.cling.model.meta.DeviceIdentity;
+import org.fourthline.cling.model.meta.Icon;
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.LocalService;
+import org.fourthline.cling.model.meta.ManufacturerDetails;
+import org.fourthline.cling.model.meta.ModelDetails;
 import org.fourthline.cling.model.meta.RemoteDevice;
+import org.fourthline.cling.model.types.UDADeviceType;
+import org.fourthline.cling.model.types.UDN;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 import org.fourthline.cling.support.avtransport.impl.AVTransportService;
 import org.fourthline.cling.support.avtransport.impl.AVTransportStateMachine;
 import org.fourthline.cling.support.avtransport.lastchange.AVTransportLastChangeParser;
+import org.fourthline.cling.support.connectionmanager.ConnectionManagerService;
 import org.fourthline.cling.support.lastchange.LastChangeAwareServiceManager;
 import org.fourthline.cling.support.lastchange.LastChangeParser;
 import org.seamless.statemachine.States;
@@ -100,7 +112,7 @@ public class MyUPnPService extends Binder implements UPnPService {
         LastChangeParser lastChangeParser = new AVTransportLastChangeParser();
 
         service.setManager(
-                new LastChangeAwareServiceManager<AVTransportService>(service, lastChangeParser) {
+                new LastChangeAwareServiceManager<AVTransportService>(service, null) {
                     @Override
                     protected AVTransportService createServiceInstance() throws Exception {
                         return new AVTransportService(
@@ -110,6 +122,44 @@ public class MyUPnPService extends Binder implements UPnPService {
                     }
                 }
         );
+
+        LocalService connectionManagerService = new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
+        connectionManagerService.setManager(
+                new DefaultServiceManager(connectionManagerService) {
+                    @Override
+                protected Object createServiceInstance() throws  Exception {
+                        return new ConnectionManagerService();
+                    }
+                }
+        );
+
+        LocalDevice device = null;
+        try {
+            device = new LocalDevice(
+                    new DeviceIdentity(new UDN(UUID.randomUUID())),
+                    new UDADeviceType("MediaRenderer", 1),
+                    new DeviceDetails(
+                            "MediaRenderer on ...",
+                            new ManufacturerDetails("RemoteUPnp", "http://none"),
+                            new ModelDetails("RemoteUpnp mediarenderer", "REMOTEUPNP", "1", "http")
+                            ),
+                    new Icon[]{createDefaultDeviceIcon()},
+                    new LocalService[]{
+                            service,
+                            connectionManagerService
+                    }
+            );
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+        upnpService.getRegistry().addDevice(device);
+    }
+
+    private Icon createDefaultDeviceIcon() {
+        return new Icon("image/png",
+                48, 48, 8,
+                "icon.png",
+                new byte[] {0,0,0});
     }
 
     @Override
