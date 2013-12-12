@@ -12,7 +12,7 @@ import org.fourthline.cling.model.types.UDAServiceType;
  * Created by wonyoungjang on 13. 10. 15..
  */
 public class RendererUpnpService extends AndroidUpnpServiceImpl {
-
+/*
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
@@ -34,6 +34,9 @@ public class RendererUpnpService extends AndroidUpnpServiceImpl {
                   new UDAServiceType("AVTransport")
                 };
             }
+			
         };
     }
+	
+	*/
 }

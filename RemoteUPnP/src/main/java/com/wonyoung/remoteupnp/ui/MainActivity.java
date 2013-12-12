@@ -24,6 +24,7 @@ import org.fourthline.cling.model.meta.*;
 import android.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.widget.*;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
     protected static final String TAG = MainActivity.class.getName();
@@ -55,6 +56,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 setPlaylistListener(playlistListener);
         }
     };
+
+	private String parentFolder = null;
+
+	public void shuffle()
+	{
+		uPnpService.shuffle();
+		// TODO: Implement this method
+	}
+
+	public void setParentFolder(String parentID)
+	{
+		parentFolder = parentID;
+		// TODO: Implement this method
+	}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +151,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                                 FragmentTransaction fragmentTransaction) {
     }
 
+	@Override
+	public void onBackPressed() {
+		if (parentFolder != null) {
+			browse(parentFolder);
+		}
+		else {
+		super.onBackPressed();
+		}
+	}
+	
     public void browse(String folder) {
 
         MediaServer mediaServer = uPnpService.getMediaServer();
@@ -154,8 +179,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void playFrom(int index) {
         Renderer renderer = uPnpService.getRenderer();
+		renderer.debugToastTo(this);
         renderer.playFrom(index);
     }
+	
+	public void toast(final String s) {
+		runOnUiThread(new Runnable() {
+
+				public void run()
+				{
+					Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+					// TODO: Implement this method
+				}
+				
+			
+		});
+
+	}
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -215,10 +255,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void setUPnPService(UPnPService upnpService) {
         this.uPnpService = upnpService;
-    }
-
-    public Renderer getRenderer() {
-        return uPnpService.getRenderer();
     }
 
     public void setRenderer(Device renderer) {

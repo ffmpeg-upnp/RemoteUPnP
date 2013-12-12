@@ -10,7 +10,7 @@ import org.fourthline.cling.support.model.item.*;
 
 import java.util.*;
 
-public class PlaylistAdapter extends BaseAdapter {
+public class PlaylistAdapter extends BaseAdapter implements PlaylistListener {
     private ArrayList<Item> list = new ArrayList<Item>();
     private FragmentActivity activity;
 
@@ -18,12 +18,19 @@ public class PlaylistAdapter extends BaseAdapter {
         this.activity = activity;
     }
 
+	@Override
     public void addAll(List<Item> items) {
         list.addAll(items);
         update();
     }
 
-    private void update() {
+	@Override
+	public void set(List<Item> items) {
+		list.clear();
+		addAll(items);
+	}
+	
+    public void update() {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

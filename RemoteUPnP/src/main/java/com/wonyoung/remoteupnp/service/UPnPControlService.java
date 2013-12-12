@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.wonyoung.remoteupnp.R;
 import com.wonyoung.remoteupnp.ui.MainActivity;
+import com.wonyoung.remoteupnp.localrenderer.*;
+import org.fourthline.cling.android.*;
 
 public class UPnPControlService extends Service
 {

@@ -30,4 +30,13 @@
         android:layout_gravity="right"
         android:layout_toRightOf="@+id/deviceIcon" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="New Text"
+        android:id="@+id/deviceInfo"
+        android:layout_gravity="right"
+        android:layout_toLeftOf="@+id/deviceIcon" />
 </RelativeLayout>

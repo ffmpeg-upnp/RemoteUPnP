@@ -4,6 +4,7 @@ import org.fourthline.cling.support.model.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 /**
  * Created by wonyoungjang on 2013. 11. 30..
@@ -11,6 +12,13 @@ import java.util.List;
 public class Playlist {
     ArrayList<Item> list = new ArrayList<Item>();
     private PlaylistListener listener;
+
+	public void shuffle()
+	{
+		Collections.shuffle(list);
+		listener.set(list);
+		// TODO: Implement this method
+	}
 
     public void add(List<Item> items) {
         list.addAll(items);

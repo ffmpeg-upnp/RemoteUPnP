@@ -9,6 +9,11 @@
         android:layout_height="wrap_content"
 		android:text="Play All"
         android:id="@+id/playAll" />
+	<Button
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:text="Surffle"
+        android:id="@+id/surffle" />
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

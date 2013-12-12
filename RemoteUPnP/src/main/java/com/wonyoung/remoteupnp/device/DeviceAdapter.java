@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wonyoung.remoteupnp.R;
+import android.widget.*;
 
 /**
  * Created by wonyoung.jang on 13. 11. 22.
@@ -70,6 +71,7 @@ public class DeviceAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.icon = (ImageView) convertView.findViewById(R.id.deviceIcon);
             holder.title = (TextView) convertView.findViewById(R.id.deviceTitle);
+			holder.info = (TextView) convertView.findViewById(R.id.deviceInfo);
 
             convertView.setTag(holder);
         }
@@ -78,18 +80,25 @@ public class DeviceAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Device device = devices.get(position);
-//        URL url = ((RemoteDevice) device).getIdentity().getDescriptorURL();
+		
+//       
 //        Log.d("meta", "device: " + device.getDisplayString());
 //        Log.d("meta", "tostring: " + device.toString());
 //        Log.d("meta", "uri: " + ((RemoteDevice)device).getIdentity().getDescriptorURL().getAuthority());
 //        for (Icon icon : device.findIcons()) {
 //            Log.d("meta", "icon uri: " + icon.getUri().toString());
 //        }
-//        if (device.hasIcons()) {
-//            Icon icon = peakIcon(device.getIcons());
-//            String iconUrl = url.getProtocol() + "://" + url.getAuthority() + icon.getUri();
-//            new DownloadImageTask(holder.icon).execute(iconUrl);
-//        }
+        if (device.hasIcons()) {
+            Icon icon = peakIcon(device.getIcons());
+			if (icon.getData() == null) {
+				URL url = ((RemoteDevice) device).getIdentity().getDescriptorURL();
+				String iconUrl = url.getProtocol() + "://" + url.getAuthority() + icon.getUri();
+				new DownloadImageTask(holder.icon).execute(iconUrl);
+			}
+			String info = "";
+			holder.info.setText(info);
+   
+        }
         holder.title.setText(device.getDisplayString());
         return convertView;
     }
@@ -146,6 +155,7 @@ public class DeviceAdapter extends BaseAdapter {
     private class ViewHolder {
         public ImageView icon;
         public TextView title;
+		public TextView info;
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap>{

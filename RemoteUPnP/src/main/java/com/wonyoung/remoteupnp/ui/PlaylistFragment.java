@@ -25,8 +25,8 @@ import java.util.List;
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class PlaylistFragment extends Fragment implements PlaylistListener {
-    private PlaylistAdapter adapter;
+public class PlaylistFragment extends Fragment {
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class PlaylistFragment extends Fragment implements PlaylistListener {
         final MainActivity activity = (MainActivity) getActivity();
 //        UPnPService uPnPService = activity.getUPnPService();
 
-        adapter = new PlaylistAdapter(activity);//uPnPService.getPlaylistAdapter();
+        final PlaylistAdapter adapter = new PlaylistAdapter(activity);//uPnPService.getPlaylistAdapter();
         ListView listView = (ListView) activity.findViewById(R.id.playlistView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,7 +59,7 @@ public class PlaylistFragment extends Fragment implements PlaylistListener {
             }
         });
 
-        activity.setPlaylistListener(this);
+        activity.setPlaylistListener(adapter);
         Button playAll = (Button) activity.findViewById(R.id.playAll);
         playAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,11 +67,18 @@ public class PlaylistFragment extends Fragment implements PlaylistListener {
                 activity.playFrom(0);
             }
         });
-    }
+		
+		Button surffle = (Button) activity.findViewById(R.id.surffle);
+		surffle.setOnClickListener(new View.OnClickListener() {
 
-    @Override
-    public void addAll(List<Item> items) {
-        adapter.addAll(items);
+				public void onClick(View p1)
+				{
+					activity.shuffle();
+					// TODO: Implement this method
+				}
+				
+			
+		});
     }
 }
 

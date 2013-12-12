@@ -22,8 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by wonyoungjang on 13. 10. 18..
  */
-public class LibrarySelectFragment extends Fragment implements FolderSubscriber {
-    private FolderViewAdapter adapter;
+public class LibrarySelectFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,13 +37,14 @@ public class LibrarySelectFragment extends Fragment implements FolderSubscriber 
 
         final MainActivity activity = (MainActivity) getActivity();
 
-        adapter = new FolderViewAdapter(activity);
+        final FolderViewAdapter adapter = new FolderViewAdapter(activity);
         ListView listView = (ListView) activity.findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DIDLObject item = (DIDLObject) adapter.getItem(position);
+				activity.setParentFolder(item.getParentID());
                 activity.browse(item.getId());
 
                 Res resource = item.getFirstResource();
@@ -54,7 +54,7 @@ public class LibrarySelectFragment extends Fragment implements FolderSubscriber 
             }
         });
 
-        activity.setMediaServerListener(this);
+        activity.setMediaServerListener(adapter);
 
         Button addAll = (Button) activity.findViewById(R.id.addAll);
         addAll.setOnClickListener(new View.OnClickListener() {
@@ -63,10 +63,5 @@ public class LibrarySelectFragment extends Fragment implements FolderSubscriber 
                 activity.addAll();
             }
         });
-    }
-
-    @Override
-    public void updatedFolderList(ArrayList<DIDLObject> updated) {
-        adapter.updatedFolderList(updated);
     }
 }

@@ -17,6 +17,9 @@ import org.fourthline.cling.model.meta.Device;
  */
 public interface UPnPService
 {
+
+	public void shuffle();
+
     ServiceConnection getServiceConnection();
 
     void addListener(DeviceSubscriber listener);

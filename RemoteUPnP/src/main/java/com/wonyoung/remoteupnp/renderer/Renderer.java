@@ -25,6 +25,7 @@ import org.fourthline.cling.support.model.TransportState;
 import org.fourthline.cling.support.model.item.Item;
 
 import java.util.Map;
+import com.wonyoung.remoteupnp.ui.*;
 
 /**
  * Created by wonyoungjang on 2013. 11. 23..
@@ -34,10 +35,18 @@ public class Renderer {
     private Device device;
     private Playlist playlist;
 
+	private MainActivity activityDebug;
+
     public Renderer(Playlist playlist) {
 
         this.playlist = playlist;
     }
+
+	public void debugToastTo(MainActivity p0)
+	{
+		this.activityDebug = p0;
+		// TODO: Implement this method
+	}
 
     public void play(String url) {
         Service service = device.findService(new UDAServiceId("AVTransport"));
@@ -102,7 +111,9 @@ public class Renderer {
                     } catch (Exception e) {
                     }
                     for (Map.Entry<String, StateVariableValue> entry : values.entrySet()) {
-                        Log.d("remoteUpnp", entry.getKey() + " is: " + entry.getValue().toString());
+						String s = entry.getKey() + " is: " + entry.getValue().toString();
+						activityDebug.toast(s);
+                        Log.d("remoteUpnp", s);
 
                     }
                 }

@@ -1,7 +1,6 @@
 package com.wonyoung.remoteupnp.service;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.fourthline.cling.android.AndroidUpnpService;
@@ -46,19 +45,21 @@ import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
-
-@States({
-        SimpleRendererNoMediaPresent.class,
-        SimpleRendererStopped.class,
-        SimpleRendererPlaying.class
-})
-interface SimpleRendererStateMachine extends AVTransportStateMachine {
-}
+import android.graphics.*;
+import com.wonyoung.remoteupnp.localrenderer.*;
 
 /**
  * Created by wonyoungjang on 2013. 11. 18..
  */
-public class MyUPnPService extends Binder implements UPnPService {
+public class MyUPnPService extends Binder implements UPnPService
+{
+
+	public void shuffle()
+	{
+		playlist.shuffle();
+		// TODO: Implement this method
+	}
+
 
     private Playlist playlist = new Playlist();
 
@@ -78,8 +79,8 @@ public class MyUPnPService extends Binder implements UPnPService {
             Log.d("bind", "Bounded connection - " + this);
             upnpService = (AndroidUpnpService) service;
 
-            addLocalRenderer();
-
+			upnpService.getRegistry().addDevice(new SimpleRenderer().createDevice());
+			
             // Clear the list
             devices.clear();
 
@@ -103,64 +104,7 @@ public class MyUPnPService extends Binder implements UPnPService {
         }
     };
 
-    private void addLocalRenderer() {
-        LocalService<AVTransportService> service =
-                new AnnotationLocalServiceBinder().read(AVTransportService.class);
-
-        // Service's which have "logical" instances are very special, they use the
-        // "LastChange" mechanism for eventing. This requires some extra wrappers.
-        LastChangeParser lastChangeParser = new AVTransportLastChangeParser();
-
-        service.setManager(
-                new LastChangeAwareServiceManager<AVTransportService>(service, null) {
-                    @Override
-                    protected AVTransportService createServiceInstance() throws Exception {
-                        return new AVTransportService(
-                                SimpleRendererStateMachine.class,   // All states
-                                SimpleRendererNoMediaPresent.class  // Initial state
-                        );
-                    }
-                }
-        );
-
-        LocalService connectionManagerService = new AnnotationLocalServiceBinder().read(ConnectionManagerService.class);
-        connectionManagerService.setManager(
-                new DefaultServiceManager(connectionManagerService) {
-                    @Override
-                protected Object createServiceInstance() throws  Exception {
-                        return new ConnectionManagerService();
-                    }
-                }
-        );
-
-        LocalDevice device = null;
-        try {
-            device = new LocalDevice(
-                    new DeviceIdentity(new UDN(UUID.randomUUID())),
-                    new UDADeviceType("MediaRenderer", 1),
-                    new DeviceDetails(
-                            "MediaRenderer on ...",
-                            new ManufacturerDetails("RemoteUPnp", "http://none"),
-                            new ModelDetails("RemoteUpnp mediarenderer", "REMOTEUPNP", "1", "http")
-                            ),
-                    new Icon[]{createDefaultDeviceIcon()},
-                    new LocalService[]{
-                            service,
-                            connectionManagerService
-                    }
-            );
-        } catch (ValidationException e) {
-            e.printStackTrace();
-        }
-        upnpService.getRegistry().addDevice(device);
-    }
-
-    private Icon createDefaultDeviceIcon() {
-        return new Icon("image/png",
-                48, 48, 8,
-                "icon.png",
-                new byte[] {0,0,0});
-    }
+  
 
     @Override
     public ServiceConnection getServiceConnection() {

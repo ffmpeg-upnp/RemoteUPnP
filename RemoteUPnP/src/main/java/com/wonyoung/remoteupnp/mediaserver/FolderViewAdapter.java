@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * Created by wonyoungjang on 2013. 11. 23..
  */
-public class FolderViewAdapter extends BaseAdapter {
+public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
 
     private ArrayList<DIDLObject> list = new ArrayList<DIDLObject>();
     private Activity activity;
@@ -127,6 +127,7 @@ public class FolderViewAdapter extends BaseAdapter {
         return mMemoryCache.get(key);
     }
 
+	@Override
     public void updatedFolderList(ArrayList<DIDLObject> updated) {
         list = updated;
         update();
