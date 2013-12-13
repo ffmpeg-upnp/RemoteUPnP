@@ -73,7 +73,7 @@ public class PlaylistFragment extends Fragment {
 
 				public void onClick(View p1)
 				{
-					activity.shuffle();
+					activity.shufflePlay();
 					// TODO: Implement this method
 				}
 				

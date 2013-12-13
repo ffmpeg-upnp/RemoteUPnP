@@ -59,9 +59,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	private String parentFolder = null;
 
-	public void shuffle()
+	public void shufflePlay()
 	{
-		uPnpService.shuffle();
+		
+	//	ArrayList<Integer> orders = new ArrayList<Integer>();
+	
+		
+		Renderer renderer = uPnpService.getRenderer();
+		renderer.debugToastTo(this);
+        renderer.playShuffle();
 		// TODO: Implement this method
 	}
 

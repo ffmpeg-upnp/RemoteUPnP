@@ -102,7 +102,7 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
 		Res res = item.getFirstResource();
 		String albumArtUrl = null;
 		if (res != null) {
-			holder.duration.setText(res.getDuration());
+			holder.duration.setText(toDurationDisplay(res.getDuration()));
             holder.info.setText(res.getProtocolInfo().getNetwork());
 		}
 		URI uri = item.getFirstPropertyValue(DIDLObject.Property.UPNP.ALBUM_ART_URI.class);
@@ -122,6 +122,23 @@ public class FolderViewAdapter extends BaseAdapter implements FolderSubscriber {
         }
         return convertView;
     }
+
+	private String toDurationDisplay(String duration)
+	{
+		return removeZero(cutOff(duration));
+	}
+
+	private String removeZero(String cutOff)
+	{
+		int start = 0;
+		while(start < cutOff.length() && ":0".indexOf(cutOff.charAt(start)) >= 0) start++;
+		return cutOff.substring(start);
+	}
+
+	private String cutOff(String duration)
+	{
+		return duration.substring(0, duration.indexOf(".")).replace(".", "");
+	}
 
     private Bitmap getBitmapFromMemCache(String key) {
         return mMemoryCache.get(key);
