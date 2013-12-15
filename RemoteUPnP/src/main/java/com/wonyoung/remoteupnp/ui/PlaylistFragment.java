@@ -48,14 +48,7 @@ public class PlaylistFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                DIDLObject item = (DIDLObject) adapter.getItem(position);
-
-                Res resource = item.getFirstResource();
-                if (resource != null) {
-                    activity.play(resource.getValue());
-                }
-                Toast.makeText(activity.getApplicationContext(), "" + resource.getDuration(),
-                        Toast.LENGTH_SHORT).show();
+                activity.playFrom(position);
             }
         });
 
@@ -67,18 +60,17 @@ public class PlaylistFragment extends Fragment {
                 activity.playFrom(0);
             }
         });
-		
-		Button surffle = (Button) activity.findViewById(R.id.surffle);
-		surffle.setOnClickListener(new View.OnClickListener() {
 
-				public void onClick(View p1)
-				{
-					activity.shufflePlay();
-					// TODO: Implement this method
-				}
-				
-			
-		});
+        Button surffle = (Button) activity.findViewById(R.id.surffle);
+        surffle.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View p1) {
+                activity.shufflePlay();
+                // TODO: Implement this method
+            }
+
+
+        });
     }
 }
 

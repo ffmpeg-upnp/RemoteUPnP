@@ -57,25 +57,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
     };
 
-	private String parentFolder = null;
+    private String parentFolder = null;
 
-	public void shufflePlay()
-	{
-		
-	//	ArrayList<Integer> orders = new ArrayList<Integer>();
-	
-		
-		Renderer renderer = uPnpService.getRenderer();
-		renderer.debugToastTo(this);
+    public void shufflePlay() {
+
+        //	ArrayList<Integer> orders = new ArrayList<Integer>();
+
+
+        Renderer renderer = uPnpService.getRenderer();
+        renderer.debugToastTo(this);
         renderer.playShuffle();
-		// TODO: Implement this method
-	}
+        // TODO: Implement this method
+    }
 
-	public void setParentFolder(String parentID)
-	{
-		parentFolder = parentID;
-		// TODO: Implement this method
-	}
+    public void setParentFolder(String parentID) {
+        parentFolder = parentID;
+        // TODO: Implement this method
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,16 +155,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                                 FragmentTransaction fragmentTransaction) {
     }
 
-	@Override
-	public void onBackPressed() {
-		if (parentFolder != null) {
-			browse(parentFolder);
-		}
-		else {
-		super.onBackPressed();
-		}
-	}
-	
+    @Override
+    public void onBackPressed() {
+        if (parentFolder != null) {
+            browse(parentFolder);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     public void browse(String folder) {
 
         MediaServer mediaServer = uPnpService.getMediaServer();
@@ -185,23 +182,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void playFrom(int index) {
         Renderer renderer = uPnpService.getRenderer();
-		renderer.debugToastTo(this);
+        renderer.debugToastTo(this);
         renderer.playFrom(index);
     }
-	
-	public void toast(final String s) {
-		runOnUiThread(new Runnable() {
 
-				public void run()
-				{
-					Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
-					// TODO: Implement this method
-				}
-				
-			
-		});
+    public void toast(final String s) {
+        runOnUiThread(new Runnable() {
 
-	}
+            public void run() {
+                Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
+        Log.d("remoteUpnp", s);
+    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
